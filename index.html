@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENIGMA — エニグマとボンベ:暗号と解読の物語</title>
+<style>
+:root{
+  --bakelite:#141519;
+  --panel:#1e2026;
+  --panel2:#262830;
+  --brass:#c8a45e;
+  --brass-dim:#8a7344;
+  --lamp:#ffe49a;
+  --lamp-glow:#ffce5e;
+  --paper:#ece1c8;
+  --paper2:#e2d5b8;
+  --ink:#2b2519;
+  --ink-soft:#56492f;
+  --red:#a63c2c;
+  --dim:#9aa1ab;
+  --line:#3a3d46;
+  --ok:#7fae6f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bakelite);
+  color:#d6d9de;
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  line-height:1.9;
+  font-size:16px;
+}
+.serif{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+.mono{font-family:"Courier New","Osaka-Mono","MS Gothic",monospace}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:92vh;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:48px 20px;position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 38%, rgba(200,164,94,.10), transparent 70%),
+    var(--bakelite);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.012) 3px 4px);
+}
+.hero-eyebrow{
+  font-family:"Courier New",monospace;font-size:12px;letter-spacing:.5em;
+  color:var(--brass);text-transform:uppercase;margin-bottom:28px;
+}
+.hero-title{
+  font-family:"Courier New","Osaka-Mono",monospace;
+  font-size:clamp(56px,14vw,150px);
+  letter-spacing:.12em;color:var(--lamp);font-weight:700;
+  text-shadow:0 0 30px rgba(255,206,94,.35),0 0 80px rgba(255,206,94,.15);
+  margin-bottom:18px;line-height:1.1;
+}
+.hero-sub{
+  font-size:clamp(16px,2.6vw,22px);color:#e8e3d6;letter-spacing:.18em;margin-bottom:14px;
+}
+.hero-note{font-size:13px;color:var(--dim);letter-spacing:.1em;max-width:560px}
+.hero-note em{color:var(--brass);font-style:normal}
+.hero-scroll{
+  margin-top:54px;font-size:11px;letter-spacing:.4em;color:var(--dim);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.hero-scroll::after{content:"";width:1px;height:46px;background:linear-gradient(var(--brass),transparent)}
+
+/* ============ LAYOUT ============ */
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+section{padding:84px 0}
+.chap{
+  display:flex;align-items:baseline;gap:18px;margin-bottom:8px;flex-wrap:wrap;
+}
+.chap-no{
+  font-family:"Courier New",monospace;font-size:12px;letter-spacing:.35em;
+  color:var(--brass);border:1px solid var(--brass-dim);padding:5px 12px 4px;white-space:nowrap;
+}
+.chap h2{
+  font-size:clamp(26px,4.6vw,38px);color:#f0ead8;letter-spacing:.1em;font-weight:600;
+}
+.chap-de{
+  font-family:"Courier New",monospace;font-size:12px;color:var(--dim);
+  letter-spacing:.3em;text-transform:uppercase;margin-bottom:34px;
+}
+p.lead{color:#c4c8cf;max-width:760px}
+
+/* ===== Intercept paper card ===== */
+.paper{
+  background:
+    repeating-linear-gradient(0deg,transparent 0 31px, rgba(43,37,25,.07) 31px 32px),
+    linear-gradient(160deg,var(--paper),var(--paper2));
+  color:var(--ink);
+  padding:42px 44px;margin:30px 0;position:relative;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);
+}
+.paper::before{
+  content:attr(data-stamp);
+  position:absolute;top:16px;right:18px;
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:.25em;
+  color:var(--red);border:2px solid var(--red);padding:4px 10px;
+  transform:rotate(4deg);opacity:.75;
+}
+.paper h3{
+  font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;
+  font-size:21px;margin-bottom:16px;color:var(--ink);letter-spacing:.08em;
+  border-bottom:2px solid rgba(43,37,25,.25);padding-bottom:10px;
+}
+.paper p{margin-bottom:14px;color:#3a3122}
+.paper p:last-child{margin-bottom:0}
+.paper strong{color:var(--red)}
+.paper .src{font-size:12px;color:var(--ink-soft);font-family:"Courier New",monospace;letter-spacing:.08em}
+
+/* ===== machine panel base ===== */
+.machine{
+  background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);
+  border:1px solid var(--line);border-top:3px solid var(--brass-dim);
+  padding:30px;margin:30px 0;box-shadow:0 18px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.machine-label{
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:.35em;
+  color:var(--brass);margin-bottom:20px;text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;
+}
+.machine-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ===== signal flow diagram ===== */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;justify-content:center;margin:8px 0 18px}
+.flow-box{
+  background:#181a1f;border:1px solid var(--line);padding:14px 13px;text-align:center;
+  min-width:96px;flex:1;max-width:150px;position:relative;
+}
+.flow-box .t{font-size:13px;color:#e8e3d6;font-weight:600;letter-spacing:.05em}
+.flow-box .s{font-size:10.5px;color:var(--dim);font-family:"Courier New",monospace;letter-spacing:.06em;margin-top:3px}
+.flow-arrow{display:flex;align-items:center;color:var(--brass);font-size:17px;padding:0 5px}
+.flow-back{
+  text-align:center;font-size:12.5px;color:var(--brass);margin-top:14px;
+  font-family:"Courier New",monospace;letter-spacing:.12em;
+}
+.flow-note{font-size:13.5px;color:#b9bec6;margin-top:18px}
+
+/* ===== Rotor odometer demo ===== */
+.odo{display:flex;gap:14px;justify-content:center;align-items:center;margin:18px 0}
+.odo-win{
+  width:62px;height:80px;background:#0d0e11;border:2px solid var(--brass-dim);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-family:"Courier New",monospace;font-size:38px;color:var(--lamp);
+  box-shadow:inset 0 6px 16px rgba(0,0,0,.8);position:relative;
+}
+.odo-win small{position:absolute;bottom:-22px;font-size:10px;color:var(--dim);letter-spacing:.15em}
+.odo-btn{
+  margin:34px auto 6px;display:block;
+}
+
+/* ===== buttons ===== */
+.btn{
+  font-family:inherit;cursor:pointer;background:var(--brass);color:#181208;
+  border:none;padding:11px 26px;font-size:14.5px;font-weight:700;letter-spacing:.12em;
+  box-shadow:0 3px 0 var(--brass-dim);transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--brass-dim)}
+.btn.ghost{background:transparent;color:var(--brass);border:1px solid var(--brass-dim);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+
+/* ============ SIMULATOR ============ */
+.sim-settings{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:26px;
+}
+.setting{background:#181a1f;border:1px solid var(--line);padding:14px 16px}
+.setting label{display:block;font-size:11px;letter-spacing:.22em;color:var(--brass);margin-bottom:9px;font-family:"Courier New",monospace}
+.setting .row{display:flex;gap:8px;flex-wrap:wrap}
+select{
+  background:#0d0e11;color:#e8e3d6;border:1px solid var(--line);padding:7px 8px;
+  font-family:"Courier New",monospace;font-size:14px;flex:1;min-width:56px;
+}
+input[type=text]{
+  background:#0d0e11;color:var(--lamp);border:1px solid var(--line);padding:8px 10px;
+  font-family:"Courier New",monospace;font-size:14px;width:100%;letter-spacing:.2em;
+}
+.setting .hint{font-size:11px;color:var(--dim);margin-top:7px;line-height:1.6}
+.plug-err{font-size:11.5px;color:#e07b6a;margin-top:6px;display:none}
+
+/* rotor windows */
+.rotor-row{display:flex;gap:22px;justify-content:center;margin:6px 0 28px;flex-wrap:wrap}
+.rotor{display:flex;flex-direction:column;align-items:center;gap:6px}
+.rotor .name{font-size:11px;color:var(--dim);letter-spacing:.2em;font-family:"Courier New",monospace}
+.rotor .win{
+  width:58px;height:74px;background:#0d0e11;border:2px solid var(--brass-dim);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Courier New",monospace;font-size:36px;color:var(--lamp);
+  box-shadow:inset 0 6px 16px rgba(0,0,0,.85);
+  transition:transform .1s;
+}
+.rotor .win.tick{transform:translateY(-3px)}
+.rotor .step-btns{display:flex;gap:6px}
+.rotor .step-btns button{
+  background:#24262d;color:var(--brass);border:1px solid var(--line);width:27px;height:24px;
+  cursor:pointer;font-size:12px;line-height:1;
+}
+.rotor .step-btns button:hover{background:#2d3038}
+
+/* keyboard & lampboard */
+.board{margin:18px 0}
+.board-label{font-size:10.5px;letter-spacing:.3em;color:var(--dim);margin-bottom:10px;font-family:"Courier New",monospace;text-align:center}
+.kb-row{display:flex;justify-content:center;gap:7px;margin-bottom:7px}
+.key{
+  width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#34373f,#1b1d22 70%);
+  border:2px solid #41444d;color:#cdd1d8;
+  font-family:"Courier New",monospace;font-size:16px;font-weight:700;cursor:pointer;
+  box-shadow:0 3px 0 #0b0c0e;transition:transform .05s;
+}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 #0b0c0e}
+.lamp{
+  width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#26241c,#15140f 72%);
+  border:2px solid #3b382c;color:#6b6650;
+  font-family:"Courier New",monospace;font-size:16px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .12s;
+}
+.lamp.on{
+  background:radial-gradient(circle at 40% 32%,#fff3cf,var(--lamp-glow) 75%);
+  color:#4a3508;border-color:var(--lamp-glow);
+  box-shadow:0 0 18px rgba(255,206,94,.85),0 0 46px rgba(255,206,94,.4);
+}
+
+/* tape */
+.tape{
+  background:var(--paper);color:var(--ink);padding:16px 20px;margin-top:24px;
+  font-family:"Courier New",monospace;box-shadow:0 8px 24px rgba(0,0,0,.45);
+}
+.tape .row{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.tape .lbl{font-size:10px;letter-spacing:.25em;color:var(--ink-soft);width:62px;flex-shrink:0}
+.tape .txt{font-size:17px;letter-spacing:.22em;word-break:break-all;min-height:24px;flex:1}
+.tape .txt.out{color:var(--red);font-weight:700}
+.tape hr{border:none;border-top:1px dashed rgba(43,37,25,.3);margin:10px 0}
+.sim-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.sim-tip{font-size:12px;color:var(--dim)}
+
+/* trace */
+.trace{
+  margin-top:20px;background:#0d0e11;border:1px solid var(--line);padding:14px 18px;
+  font-family:"Courier New",monospace;font-size:13px;color:#b9bec6;
+  letter-spacing:.05em;overflow-x:auto;white-space:nowrap;min-height:48px;
+  display:flex;align-items:center;
+}
+.trace b{color:var(--lamp);font-size:15px}
+.trace .st{color:var(--brass);font-size:10.5px;letter-spacing:.1em}
+.trace .ar{color:#555a64;padding:0 6px}
+
+/* ============ numbers ============ */
+.numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:28px 0}
+.num-card{background:#181a1f;border:1px solid var(--line);padding:22px 20px;border-top:2px solid var(--brass-dim)}
+.num-card .v{font-family:"Courier New",monospace;font-size:clamp(20px,3vw,27px);color:var(--lamp);margin-bottom:6px;word-break:break-all}
+.num-card .k{font-size:13px;color:#c4c8cf;font-weight:600}
+.num-card .d{font-size:12px;color:var(--dim);margin-top:5px;line-height:1.7}
+.big-number{
+  text-align:center;margin:36px 0 8px;padding:34px 20px;
+  background:radial-gradient(ellipse at center,rgba(200,164,94,.08),transparent 70%);
+}
+.big-number .v{
+  font-family:"Courier New",monospace;font-size:clamp(17px,3.4vw,30px);color:var(--lamp);
+  letter-spacing:.06em;text-shadow:0 0 24px rgba(255,206,94,.3);word-break:break-all;
+}
+.big-number .k{font-size:14px;color:var(--brass);margin-top:12px;letter-spacing:.2em}
+
+/* ============ crib slider ============ */
+.crib-area{overflow-x:auto;padding:10px 2px 4px}
+.crib-grid{display:inline-block;min-width:100%}
+.crib-line{display:flex;gap:3px;margin-bottom:3px}
+.cc{
+  width:30px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-family:"Courier New",monospace;font-size:15px;
+}
+.cc.ct{background:#181a1f;border:1px solid var(--line);color:#dfe3e9}
+.cc.cb{background:var(--paper);color:var(--ink);border:1px solid #b7a880;font-weight:700}
+.cc.cb.hit{background:var(--red);color:#fff;border-color:var(--red)}
+.cc.blank{visibility:hidden}
+.cc.idx{font-size:9px;color:#565b64;height:16px;border:none}
+.crib-ctrl{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap}
+.crib-verdict{font-size:14px;font-weight:700;letter-spacing:.08em}
+.crib-verdict.ok{color:var(--ok)}
+.crib-verdict.ng{color:#e07b6a}
+
+/* ============ bombe ============ */
+.bombe-drums{display:flex;gap:18px;justify-content:center;margin:10px 0 22px}
+.drum{
+  width:74px;height:74px;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,#7d2f24,#4d1d16 70%);
+  border:3px solid #8a6a3a;display:flex;align-items:center;justify-content:center;
+  font-family:"Courier New",monospace;font-size:30px;color:var(--paper);font-weight:700;
+  box-shadow:0 6px 18px rgba(0,0,0,.6), inset 0 -6px 14px rgba(0,0,0,.4);
+}
+.drum.spin{animation:drumspin .25s linear infinite}
+@keyframes drumspin{0%{transform:rotate(0)}100%{transform:rotate(8deg)}}
+.bombe-status{
+  font-family:"Courier New",monospace;text-align:center;font-size:14px;color:#b9bec6;
+  min-height:30px;letter-spacing:.08em;
+}
+.bombe-status b{color:var(--lamp);font-size:17px}
+.bombe-bar{height:7px;background:#0d0e11;border:1px solid var(--line);margin:16px auto;max-width:520px}
+.bombe-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--brass-dim),var(--brass));transition:width .1s linear}
+.bombe-ctrl{display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.bombe-result{display:none;margin-top:24px}
+.bombe-result.show{display:block;animation:fadein .6s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stop-tag{
+  display:inline-block;font-family:"Courier New",monospace;font-size:21px;letter-spacing:.4em;
+  color:var(--lamp);border:2px solid var(--brass);padding:8px 18px 8px 24px;margin:8px 0;
+  text-shadow:0 0 16px rgba(255,206,94,.45);
+}
+.decrypted{
+  font-family:"Courier New",monospace;font-size:15px;letter-spacing:.14em;color:var(--ink);
+  word-break:break-all;line-height:2.1;
+}
+.decrypted .jp{font-family:inherit;letter-spacing:.05em;color:var(--red);font-weight:700;font-size:14px}
+
+/* ============ timeline / epilogue ============ */
+.epi{border-left:2px solid var(--brass-dim);padding-left:28px;margin:30px 0}
+.epi-item{margin-bottom:26px;position:relative}
+.epi-item::before{
+  content:"";position:absolute;left:-34px;top:9px;width:10px;height:10px;border-radius:50%;
+  background:var(--brass);box-shadow:0 0 10px rgba(200,164,94,.5);
+}
+.epi-item .y{font-family:"Courier New",monospace;color:var(--brass);font-size:13px;letter-spacing:.2em}
+.epi-item .t{font-weight:700;color:#eee8d8;margin:2px 0 4px;font-size:16px}
+.epi-item p{font-size:14.5px;color:#b9bec6}
+
+footer{
+  border-top:1px solid var(--line);padding:44px 20px 60px;text-align:center;
+  font-size:12.5px;color:var(--dim);line-height:2.1;
+}
+footer .mono{color:var(--brass);letter-spacing:.25em}
+
+.divider{
+  text-align:center;color:var(--brass-dim);font-family:"Courier New",monospace;
+  letter-spacing:.6em;font-size:11px;padding:0 0 0 .6em;
+}
+
+/* ===== archival photos ===== */
+.photo{
+  background:var(--paper);padding:12px 12px 10px;margin:26px auto;
+  box-shadow:0 14px 36px rgba(0,0,0,.55);max-width:640px;
+  transform:rotate(-.4deg);
+}
+.photo.tilt-r{transform:rotate(.5deg)}
+.photo img{
+  display:block;width:100%;height:auto;
+  filter:sepia(.12) contrast(1.02);
+  border:1px solid rgba(43,37,25,.25);
+  background:#d8cdb2;min-height:120px;
+}
+.photo figcaption{
+  font-size:12.5px;color:var(--ink-soft);padding:10px 4px 2px;line-height:1.7;
+}
+.photo figcaption b{color:var(--ink)}
+.photo .credit{font-size:10.5px;color:#8a7c5e;font-family:"Courier New",monospace}
+.photo .credit a{color:#8a7c5e}
+.photo-pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media (max-width:680px){.photo-pair{grid-template-columns:1fr}}
+.photo.portrait{max-width:340px}
+
+/* ===== visit section ===== */
+.visit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:26px 0}
+.visit-card{background:#181a1f;border:1px solid var(--line);padding:20px;border-top:2px solid var(--brass-dim)}
+.visit-card .icon{font-size:22px;margin-bottom:8px}
+.visit-card h4{font-size:14.5px;color:#eee8d8;margin-bottom:7px;letter-spacing:.05em}
+.visit-card p{font-size:13px;color:#aab0b9;line-height:1.8}
+.visit-card a{color:var(--brass)}
+.visit-cta{
+  text-align:center;margin-top:34px;padding:30px 20px;
+  border:1px dashed var(--brass-dim);
+}
+.visit-cta .t{font-size:17px;color:var(--lamp);letter-spacing:.12em;margin-bottom:8px}
+.visit-cta p{font-size:13.5px;color:var(--dim)}
+.visit-cta a{color:var(--brass)}
+
+@media (max-width:640px){
+  .key,.lamp{width:34px;height:34px;font-size:13px}
+  .kb-row{gap:5px}
+  .paper{padding:30px 22px}
+  .machine{padding:20px 14px}
+  section{padding:60px 0}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .drum.spin{animation:none}
+  *{transition:none!important;animation:none!important}
+}
+/* ===== caesar & frequency demos ===== */
+.caesar-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:640px){.caesar-grid{grid-template-columns:1fr}}
+input[type=range]{
+  appearance:none;-webkit-appearance:none;height:6px;background:#0d0e11;
+  border:1px solid var(--line);outline:none;margin:12px 0 4px;
+}
+input[type=range]::-webkit-slider-thumb{
+  appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#e8cf94,var(--brass) 70%);
+  border:2px solid var(--brass-dim);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--brass);
+  border:2px solid var(--brass-dim);cursor:pointer;
+}
+.freq-chart{
+  display:flex;align-items:flex-end;gap:3px;height:130px;
+  padding:12px 8px 26px;background:#0d0e11;border:1px solid var(--line);
+  overflow-x:auto;
+}
+.freq-col{
+  flex:1;min-width:14px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;position:relative;height:100%;
+}
+.freq-bar{
+  width:100%;background:linear-gradient(180deg,var(--brass),var(--brass-dim));
+  transition:height .6s ease;min-height:1px;
+}
+.freq-col.top .freq-bar{background:linear-gradient(180deg,#ffe9ad,var(--lamp-glow));box-shadow:0 0 12px rgba(255,206,94,.5)}
+.freq-col .fl{
+  position:absolute;bottom:-22px;font-family:"Courier New",monospace;font-size:11px;color:var(--dim);
+}
+.freq-col.top .fl{color:var(--lamp);font-weight:700}
+.freq-col .fn{
+  position:absolute;top:-2px;font-family:"Courier New",monospace;font-size:9px;color:#6b7078;
+}
+
+/* ===== column (side story) ===== */
+.paper.column{
+  background:
+    repeating-linear-gradient(0deg,transparent 0 31px, rgba(42,60,92,.08) 31px 32px),
+    linear-gradient(160deg,#f1e9d4,#e6dabc);
+  border-left:5px solid #3a5a8c;
+}
+.paper.column::before{
+  color:#3a5a8c;border-color:#3a5a8c;transform:rotate(-3deg);
+}
+.paper.column h3{border-bottom-color:rgba(58,90,140,.35)}
+.paper.column h3::before{
+  content:"コラム";
+  display:inline-block;font-size:11px;letter-spacing:.2em;font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;
+  background:#3a5a8c;color:#f1e9d4;padding:3px 10px 2px;margin-right:12px;vertical-align:3px;
+}
+.paper.column strong{color:#31517f}
+.paper.column .src{color:#5a6b85}
+
+/* ===== next steps ===== */
+.next-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:28px 0}
+@media (max-width:680px){.next-cards{grid-template-columns:1fr}}
+.next-card{
+  background:#181a1f;border:1px solid var(--line);border-top:3px solid var(--brass-dim);
+  padding:26px 24px;display:flex;flex-direction:column;
+}
+.next-card .kind{
+  font-family:"Courier New",monospace;font-size:10.5px;letter-spacing:.3em;color:var(--brass);margin-bottom:10px;
+}
+.next-card h4{font-size:17px;color:#f0ead8;margin-bottom:4px;letter-spacing:.04em;line-height:1.6}
+.next-card .by{font-size:12px;color:var(--dim);margin-bottom:12px}
+.next-card p{font-size:13.5px;color:#b9bec6;line-height:1.9;flex:1}
+.next-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.mini-btn{
+  display:inline-block;font-size:12.5px;letter-spacing:.08em;text-decoration:none;
+  color:var(--brass);border:1px solid var(--brass-dim);padding:8px 16px;
+  transition:background .15s,color .15s;
+}
+.mini-btn:hover{background:var(--brass);color:#181208}
+.next-note{font-size:11.5px;color:#6b7078;text-align:center;margin-top:6px}
+
+/* photo fallback placeholder */
+.ph-fb{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  min-height:200px;border:1px dashed rgba(43,37,25,.4);background:#ded2b4;
+  color:var(--ink-soft);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8;
+}
+.ph-fb .cam{font-size:26px}
+.ph-fb a{color:var(--red);font-weight:700}
+.ph-fb small{font-size:11px;color:#8a7c5e}
+</style>
+<script>
+/* 外部画像が読み込めない環境(プレビュー等)用のフォールバック */
+function pf(img){
+  var fig=img.closest('figure');
+  var page=img.getAttribute('data-page')||'#';
+  var div=document.createElement('div');
+  div.className='ph-fb';
+  div.innerHTML='<span class="cam">📷</span>'+
+    '<span>この場所に写真が入ります。<br><a href="'+page+'" target="_blank" rel="noopener">写真を別タブで見る(Wikimedia Commons)</a></span>'+
+    '<small>※プレビュー環境では外部画像が制限されます。ファイルをブラウザで開くか、サイト公開時には自動で表示されます。</small>';
+  img.replaceWith(div);
+}
+</script>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="hero-eyebrow">Geheime Reichssache — 国家機密</div>
+  <h1 class="hero-title" id="heroTitle" aria-label="ENIGMA">XQVJZK</h1>
+  <p class="hero-sub serif">エニグマとボンベ ── 暗号と解読の物語</p>
+  <p class="hero-note">
+    第二次世界大戦。ドイツ軍の暗号機<em>エニグマ</em>は「解読不可能」と信じられていた。
+    それを打ち破ったのが、アラン・チューリングたちが<em>ブレッチリー・パーク</em>で作り上げた機械「ボンベ」である。
+    このページでは、その仕組みを<em>実際に動くデモ</em>で体験できます。
+  </p>
+  <div class="hero-scroll">SCROLL</div>
+</header>
+
+<!-- ================= 第1章 暗号とは ================= -->
+<section id="basics">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 一 章</span><h2 class="serif">そもそも、暗号とは何か</h2></div>
+    <div class="chap-de">Was ist Kryptographie?</div>
+
+    <div class="paper" data-stamp="BASIC TRAINING">
+      <h3>「読まれても、読めない」ようにする技術</h3>
+      <p>
+        手紙は途中で盗み見られるかもしれない。無線は、電波が届く範囲の<strong>敵も味方も全員が聞いています</strong>。
+        それでも秘密を伝えたい──そこで人類が発明したのが暗号です。
+        メッセージを一定のルールで変換し、<strong>ルールを知る味方だけ</strong>が元に戻せるようにする。
+        このルール(正確には、ルールを動かすための秘密の設定)を<strong>「鍵」</strong>と呼びます。
+      </p>
+      <p>
+        暗号は2000年以上前から戦争と外交の勝敗を左右してきました。カエサルは軍令を暗号化し、
+        メアリー女王は暗号を破られて処刑され、そしてエニグマの解読は第二次世界大戦の行方を変えました。
+        現代でも本質は同じです。スマホ決済、メッセージアプリ、ネット通販──
+        あなたが今日使った通信のほぼすべてが、この技術の直系の子孫に守られています。
+      </p>
+      <h3 style="margin-top:28px">いちばん古い暗号:文字の置き換え</h3>
+      <p>
+        古典暗号の代表が<strong>換字式(かえじしき)暗号</strong>──「文字を別の文字に置き換える」方式です。
+        最も有名なのが、ユリウス・カエサルが使ったと伝わる<strong>シーザー暗号</strong>。
+        アルファベットを決まった数だけずらすだけ、というシンプルなものです(例:3ずらすと A→D、B→E、…)。
+        「何文字ずらすか」が、この暗号の鍵です。まずはこれを触ってみましょう。
+      </p>
+    </div>
+
+    <div class="machine">
+      <div class="machine-label">Caesar Cipher — シーザー暗号を試す</div>
+      <div class="caesar-grid">
+        <div class="setting">
+          <label>原文(ローマ字で入力)</label>
+          <input type="text" id="caesarIn" value="TURING" maxlength="24" autocomplete="off">
+        </div>
+        <div class="setting">
+          <label>鍵:ずらす数 = <span id="caesarShiftV" style="color:var(--lamp)">3</span></label>
+          <input type="range" id="caesarShift" min="0" max="25" value="3" style="width:100%">
+          <div class="hint">スライダーを動かすと暗号文が変わります</div>
+        </div>
+      </div>
+      <div class="tape" style="margin-top:16px">
+        <div class="row"><span class="lbl">原 文</span><span class="txt" id="caesarPlain">TURING</span></div>
+        <hr>
+        <div class="row"><span class="lbl">暗号文</span><span class="txt out" id="caesarOut"></span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--dim);margin-top:14px">
+        鍵(ずらす数)を知っている味方は、逆にずらすだけで元に戻せます。単純ですが、これが暗号のすべての基本形です。
+      </p>
+    </div>
+
+    <div class="paper" data-stamp="LESSON 2">
+      <h3>しかし、単純な換字は必ず破られる</h3>
+      <p>
+        シーザー暗号の鍵は26通りしかないので、全部試せば数分で破れます。
+        では、ずらすのではなく「AはQに、BはXに…」と26文字をバラバラに対応させたら?
+        鍵は約40京通り(26の階乗 ≒ 4×10²⁶)に跳ね上がりますが──それでも破られます。
+      </p>
+      <p>
+        武器は<strong>頻度分析</strong>。9世紀のアラビアの学者アル・キンディーが発見した手法で、
+        言語には「よく使う文字の癖」があることを利用します。英語なら <span class="mono"><strong>E</strong></span> が圧倒的に多く、
+        次いで T、A、O…。暗号文の中で一番多い文字は、たぶん E の変装した姿だ──
+        そうやって芋づる式に対応表を暴けるのです。下のデモで、暗号が「破られる瞬間」を体験してください。
+      </p>
+    </div>
+
+    <div class="machine">
+      <div class="machine-label">Frequency Analysis — 頻度分析で暗号を破る</div>
+      <p style="font-size:14px;color:#b9bec6;margin-bottom:14px">
+        敵の通信を傍受しました。シーザー暗号らしいことは分かっていますが、鍵(ずらした数)は不明です。
+      </p>
+      <div class="tape" style="margin-bottom:18px">
+        <div class="row"><span class="lbl">傍受文</span><span class="txt" id="freqCT" style="font-size:14px"></span></div>
+      </div>
+      <div style="text-align:center;margin-bottom:14px">
+        <button class="btn" id="freqBtn1">① 文字の出現回数を数える</button>
+      </div>
+      <div id="freqChart" class="freq-chart" style="display:none"></div>
+      <div id="freqStep2" style="display:none;text-align:center;margin-top:16px">
+        <p style="font-size:13.5px;color:#b9bec6;margin-bottom:12px">
+          最も多い文字は「<b id="freqTop" style="color:var(--lamp)"></b>」。英語で最も多い文字は「E」。<br>
+          つまり <b id="freqTop2" style="color:var(--lamp)"></b> = E だと仮定すると、鍵は <b id="freqShift" style="color:var(--lamp)"></b> と推理できます。
+        </p>
+        <button class="btn" id="freqBtn2">② 推理した鍵で解読する</button>
+      </div>
+      <div class="tape" style="margin-top:16px;display:none" id="freqResult">
+        <div class="row"><span class="lbl">解読文</span><span class="txt out" id="freqPT" style="font-size:14px"></span></div>
+        <hr>
+        <div class="row"><span class="lbl">和 訳</span><span style="font-size:13px;color:var(--ink-soft)">真夜中に橋で会おう。攻撃は港を狙う。週末までに増援を送れ。</span></div>
+      </div>
+    </div>
+
+    <div class="paper" data-stamp="TO CHAPTER 2">
+      <h3>「一文字ごとにルールを変えればいい」</h3>
+      <p>
+        頻度分析への対抗策として16世紀に生まれたのが<strong>多表式換字暗号</strong>です。
+        1文字目はこの対応表、2文字目は別の表、3文字目はまた別の表…と、<strong>文字ごとに換字のルールを切り替える</strong>。
+        こうすると同じ E でも毎回ちがう文字に化けるので、文字の「癖」が均されて頻度分析が効かなくなります。
+      </p>
+      <p>
+        ただし人間が手作業で表を切り替えるのは遅く、ミスも出ます。表の切り替えが短い周期で繰り返されると、そこを突かれて破られる。
+        ならば──<strong>機械にやらせればいい</strong>。
+        キーを押すたびに歯車が回り、自動で換字表が切り替わり、そのパターンが約1万7千文字も繰り返されない機械。
+        それこそが、換字式暗号2000年の歴史の到達点、<strong>エニグマ</strong>なのです。
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第1章 ================= -->
+<section id="ch1">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 二 章</span><h2 class="serif">エニグマとは何か</h2></div>
+    <div class="chap-de">Die Maschine</div>
+
+    <div class="paper" data-stamp="MOST SECRET">
+      <h3>タイプライターのような暗号機</h3>
+      <p>
+        エニグマは1918年にドイツの技師アルトゥール・シェルビウスが発明した電気機械式の暗号機です。
+        見た目はタイプライターに似ていて、キーを押すと文字盤のランプがひとつ光ります。
+        たとえば <strong>A</strong> のキーを押すと <strong>X</strong> のランプが光る──この光った文字が「暗号文」になります。
+      </p>
+      <p>
+        恐ろしいのは、<strong>同じキーを押しても、毎回ちがう文字が光る</strong>ことです。
+        Aを3回押すと、X、K、Pのようにバラバラの結果が出ます。内部の「ローター(回転盤)」が一文字打つたびに回転し、
+        配線の組み合わせ──つまり暗号のルールそのもの──が一文字ごとに変わってしまうからです。
+      </p>
+      <p>
+        ドイツ軍は陸・海・空軍のあらゆる通信にエニグマを使いました。設定(鍵)は毎日0時に変更され、
+        連合軍は毎日「その日の鍵」をゼロから探し当てなければなりませんでした。
+      </p>
+      <p>
+        第一章の言葉で整理すると、エニグマは<strong>「一文字打つごとに換字表が自動で切り替わる、多表式換字暗号の機械」</strong>です。
+        分類上はローター暗号機と呼ばれます。注目すべきはその設計思想で、機械そのものが敵の手に渡っても、
+        <strong>その日の鍵さえ秘密なら安全</strong>なように作られていました(実際、連合軍はエニグマを何台も鹵獲していました)。
+        「暗号の安全は方式の秘密ではなく鍵の秘密に置け」──これは現代暗号でも大原則(ケルクホフスの原理)です。
+      </p>
+      <p class="src">REF: ENIGMA I (1930年・ドイツ国防軍仕様) — 本ページのシミュレーターは実機と同一の配線データで動作します</p>
+    </div>
+
+    <!-- ◆写真について◆
+         写真はWikimedia Commonsから直接読み込んでいます(ブラウザで開けば表示されます)。
+         サイトを正式公開する際は、各キャプションの出典リンク先から画像をダウンロードして
+         images/ フォルダ等に保存し、src="images/enigma.jpg" のように書き換えるのがおすすめです
+         (表示が速く安定し、リンク切れの心配もなくなります)。CC BY-SAの2枚はクレジット表記を残してください。 -->
+    <figure class="photo">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Enigma-Machine.jpg?width=900" alt="エニグマ暗号機の実機。木箱に収められ、手前にプラグボード、中央にキーボードとランプボード、奥に3つのローターが見える" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Enigma-Machine.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>エニグマ暗号機</b> — 手前がプラグボード、中央にキーボードとランプボード、奥の小窓に3枚のローターが覗く。<br>
+        <span class="credit">Photo: Wikimedia Commons — <a href="https://commons.wikimedia.org/wiki/File:Enigma-Machine.jpg" target="_blank" rel="noopener">出典・ライセンス</a></span>
+      </figcaption>
+    </figure>
+
+    <div class="paper column" data-stamp="POLSKA 1932">
+      <h3>最初にエニグマを破ったのは、ポーランドだった</h3>
+      <p>
+        「エニグマを破ったのはチューリング」──映画の印象ではそうなりますが、実は<strong>最初の解読者はポーランドの若き数学者たち</strong>でした。
+        ドイツの脅威を肌で感じていたポーランドは、暗号解読に語学者ではなく数学者を投入するという当時としては革新的な決断をします。
+        ポズナン大学から採用された<strong>マリアン・レイェフスキ</strong>、イェジ・ルジツキ、ヘンリク・ジガルスキの3人は、
+        群論(置換の数学)を武器に、<strong>1932年末</strong>──イギリスに先立つこと約7年──軍用エニグマの解読に成功したのです。
+        フランス情報部がドイツ側の内通者から入手した資料も追い風になりました。
+      </p>
+      <p>
+        レイェフスキたちは1938年、ローターの全位置を自動で試す機械<strong>「ボンバ(bomba)」</strong>まで作り上げます。
+        そう、チューリングの「ボンベ」という名前は、このポーランドの機械から受け継がれたものです
+        (名前の由来は当時人気だったアイスのデザート「ボンバ」だった、という愛らしい説も残っています)。
+      </p>
+      <p>
+        しかし1938年末、ドイツがローターを5種類に増やし配線も強化したことで、ポーランドの手法と国力は限界を迎えます。
+        そして1939年7月、開戦のわずか5週間前──ワルシャワ近郊の秘密会合で、ポーランドは<strong>エニグマの複製と解読手法のすべてを英仏に無償で手渡しました</strong>。
+        ブレッチリー・パークの快進撃は、この「ポーランドからの贈り物」の上に築かれたのです。
+        現在ポズナンには3人を記念する暗号博物館があり、ブレッチリー・パークにも顕彰碑が立っています。
+      </p>
+      <p class="src">※発明者はドイツの技師アルトゥール・シェルビウス(1918年)。ポーランドが担ったのは「最初に破る」という偉業のほうです。</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第2章 仕組み ================= -->
+<section id="ch2">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 三 章</span><h2 class="serif">電気が文字を旅する</h2></div>
+    <div class="chap-de">Wie sie funktioniert</div>
+    <p class="lead">
+      キーを押すと電流が流れ、いくつもの「配線の迷路」を通り抜けてランプにたどり着きます。
+      電流の旅は、行きと帰りで合計9つの変換を受けます。
+    </p>
+
+    <div class="machine">
+      <div class="machine-label">Signal Path — 信号の経路</div>
+      <div class="flow">
+        <div class="flow-box"><div class="t">キーボード</div><div class="s">TASTATUR</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="t">プラグボード</div><div class="s">STECKER</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="t">ローター×3</div><div class="s">WALZEN</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="t">リフレクター</div><div class="s">UKW</div></div>
+      </div>
+      <div class="flow-back">←── 電流は反射板で折り返し、同じ道を逆向きに通ってランプを点灯させる ──→</div>
+      <div class="flow-note">
+        <b style="color:var(--brass)">プラグボード</b>:手前のソケットにケーブルを挿し、文字のペアを入れ替える(例:A⇄M)。最大13組。<br>
+        <b style="color:var(--brass)">ローター</b>:内部に26本の配線が通った円盤。5種類から3枚を選び、順番と初期位置を決める。一文字打つごとに右端が回転する。<br>
+        <b style="color:var(--brass)">リフレクター</b>:電流を折り返す固定の配線盤。これのおかげで<b style="color:var(--lamp)">暗号化と復号が同じ操作</b>になる(同じ設定で暗号文を打ち込めば原文に戻る)。
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="machine-label">Rotor Stepping — 車のメーターのように回る</div>
+      <p style="font-size:14.5px;color:#b9bec6;max-width:720px;margin:0 auto 26px;text-align:center">
+        ローターは自動車の走行距離計のように回ります。右のローターが1周(26文字)すると、隣のローターが1目盛り進む。
+        この回転こそが「一文字ごとに暗号ルールが変わる」理由です。ボタンを押して確かめてみてください。
+      </p>
+      <div class="odo">
+        <div class="odo-win" id="odoL">A<small>左(遅)</small></div>
+        <div class="odo-win" id="odoM">A<small>中</small></div>
+        <div class="odo-win" id="odoR">A<small>右(速)</small></div>
+      </div>
+      <button class="btn ghost odo-btn" id="odoBtn">一文字打つ(ローターを回す)</button>
+      <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:10px">
+        組み合わせは 26×26×26 = 17,576 通り。中央のローターがまれに2回連続で進む「ダブルステッピング」という実機の癖も再現しています。
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第3章 シミュレーター ================= -->
+<section id="ch3">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 四 章</span><h2 class="serif">エニグマを操作する</h2></div>
+    <div class="chap-de">Der Simulator</div>
+    <p class="lead">
+      実機エニグマI(ローターI〜V・リフレクターB)の完全なシミュレーターです。
+      キーボードで文字を打つか、下の鍵盤をクリックしてください。同じ設定に戻して暗号文を打ち込めば、原文が復元されます。
+    </p>
+
+    <div class="machine">
+      <div class="machine-label">Tagesschlüssel — 本日の鍵(設定)</div>
+      <div class="sim-settings">
+        <div class="setting">
+          <label>ローターの選択(左・中・右)</label>
+          <div class="row">
+            <select id="selL"><option>I</option><option selected>II</option><option>III</option><option>IV</option><option>V</option></select>
+            <select id="selM"><option selected>I</option><option>II</option><option>III</option><option>IV</option><option>V</option></select>
+            <select id="selR"><option>I</option><option>II</option><option selected>III</option><option>IV</option><option>V</option></select>
+          </div>
+          <div class="hint">5種類から3枚を選ぶ:順列は60通り</div>
+        </div>
+        <div class="setting">
+          <label>リング設定(Ringstellung)</label>
+          <div class="row">
+            <select id="ringL"></select><select id="ringM"></select><select id="ringR"></select>
+          </div>
+          <div class="hint">内部配線と文字盤のズレを決める設定</div>
+        </div>
+        <div class="setting">
+          <label>プラグボード(ペアをスペース区切りで)</label>
+          <input type="text" id="plugInput" value="AM TC" placeholder="例: AM TC QX" maxlength="40" autocomplete="off">
+          <div class="plug-err" id="plugErr">同じ文字を2回使うことはできません</div>
+          <div class="hint">入力例「AM TC」= AとM、TとCを入れ替える</div>
+        </div>
+      </div>
+
+      <div class="machine-label">Walzenlage — ローターの位置(▲▼で初期位置を設定)</div>
+      <div class="rotor-row">
+        <div class="rotor"><span class="name" id="nameL">II</span><div class="win" id="winL">A</div><div class="step-btns"><button data-r="0" data-d="1" aria-label="左ローターを進める">▲</button><button data-r="0" data-d="-1" aria-label="左ローターを戻す">▼</button></div></div>
+        <div class="rotor"><span class="name" id="nameM">I</span><div class="win" id="winM">A</div><div class="step-btns"><button data-r="1" data-d="1" aria-label="中央ローターを進める">▲</button><button data-r="1" data-d="-1" aria-label="中央ローターを戻す">▼</button></div></div>
+        <div class="rotor"><span class="name" id="nameR">III</span><div class="win" id="winR">A</div><div class="step-btns"><button data-r="2" data-d="1" aria-label="右ローターを進める">▲</button><button data-r="2" data-d="-1" aria-label="右ローターを戻す">▼</button></div></div>
+      </div>
+
+      <div class="board">
+        <div class="board-label">LAMPENFELD — ランプボード(暗号文が光る)</div>
+        <div id="lampboard"></div>
+      </div>
+      <div class="board">
+        <div class="board-label">TASTATUR — キーボード(原文を打つ)</div>
+        <div id="keyboard"></div>
+      </div>
+
+      <div class="trace" id="trace"><span style="color:#565b64">キーを押すと、電流の旅(9段階の変換)がここに表示されます</span></div>
+
+      <div class="tape">
+        <div class="row"><span class="lbl">入 力</span><span class="txt" id="tapeIn">&nbsp;</span></div>
+        <hr>
+        <div class="row"><span class="lbl">出 力</span><span class="txt out" id="tapeOut">&nbsp;</span></div>
+      </div>
+
+      <div class="sim-actions">
+        <button class="btn ghost" id="resetBtn">位置をリセット(テープも消去)</button>
+        <span class="sim-tip">復号のコツ:暗号化したときと同じ初期位置に戻してから、暗号文を打ち込む</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第4章 鍵の数 ================= -->
+<section id="ch4">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 五 章</span><h2 class="serif">天文学的な鍵の数</h2></div>
+    <div class="chap-de">Astronomische Zahlen</div>
+    <p class="lead">ドイツ軍が「解読不可能」と信じた根拠は、設定の組み合わせの数でした。</p>
+
+    <div class="numbers">
+      <div class="num-card"><div class="v">60</div><div class="k">ローターの選び方</div><div class="d">5種類から3枚を選んで並べる順列(5×4×3)</div></div>
+      <div class="num-card"><div class="v">17,576</div><div class="k">初期位置</div><div class="d">3枚のローターの開始位置(26×26×26)</div></div>
+      <div class="num-card"><div class="v">676</div><div class="k">リング設定</div><div class="d">暗号に影響するリングの組み合わせ(26×26)</div></div>
+      <div class="num-card"><div class="v">約150兆×10⁶</div><div class="k">プラグボード</div><div class="d">10組の配線の場合、約150,738,274,937,250通り</div></div>
+    </div>
+
+    <div class="big-number">
+      <div class="v">158,962,555,217,826,360,000</div>
+      <div class="k">≒ 1垓5896京通り(リング設定を除く実効的な鍵空間)</div>
+    </div>
+    <p style="text-align:center;font-size:13.5px;color:var(--dim);max-width:680px;margin:0 auto">
+      仮に1秒間に1,000通りを人手で試せたとしても、すべて調べるには宇宙の年齢の数億倍かかります。
+      総当たりは不可能──だからこそ、チューリングたちは<span style="color:var(--lamp)">「数学的な弱点」</span>を探したのです。
+    </p>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第5章 弱点 ================= -->
+<section id="ch5">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 六 章</span><h2 class="serif">アキレス腱</h2></div>
+    <div class="chap-de">Die Achillesferse</div>
+
+    <div class="paper" data-stamp="HUT 6 / HUT 8">
+      <h3>欠陥①:文字は決して自分自身にならない</h3>
+      <p>
+        リフレクターで電流を折り返す構造のせいで、エニグマには重大な性質がありました。
+        <strong>Aを押してAが光ることは、絶対にない</strong>のです(上のシミュレーターで何度でも確かめられます)。
+        一見ささいなこの性質が、解読の最大の足がかりになりました。
+      </p>
+      <h3 style="margin-top:28px">欠陥②:人間は決まり文句を打つ</h3>
+      <p>
+        ドイツ軍の通信は形式的でした。多くの気象通信は <span class="mono"><strong>WETTERBERICHT</strong></span>(気象報告)で始まり、
+        文末には <span class="mono">HEIL HITLER</span> が頻出しました。
+        暗号文の中に「この辺りにこの単語があるはずだ」という推測──ブレッチリー・パークではこれを<strong>クリブ(crib)</strong>と呼びました。
+      </p>
+      <p>
+        2つの欠陥を組み合わせると強力です。クリブを暗号文に重ねたとき、<strong>1文字でも同じ文字が重なる位置は「ありえない」</strong>と即座に分かるのです。
+      </p>
+    </div>
+
+    <div class="machine">
+      <div class="machine-label">Crib Drag — クリブの位置あわせ(体験デモ)</div>
+      <p style="font-size:14px;color:#b9bec6;margin-bottom:18px">
+        傍受した暗号文の下で、クリブ「WETTERBERICHT」をスライドさせてみてください。
+        同じ文字が縦に重なったら(<span style="color:#e07b6a">赤</span>)、その位置はありえません。
+      </p>
+      <div class="crib-area">
+        <div class="crib-grid" id="cribGrid"></div>
+      </div>
+      <div class="crib-ctrl">
+        <button class="btn ghost" id="cribL">◀ 左へ</button>
+        <button class="btn ghost" id="cribR">右へ ▶</button>
+        <span class="crib-verdict" id="cribVerdict"></span>
+      </div>
+    </div>
+
+    <div class="paper column" data-stamp="GARDENING">
+      <h3>「ガーデニング」── クリブを"栽培"する作戦</h3>
+      <p>
+        クリブがどれほど強力かは、上のデモの通りです。では、<strong>都合のいいクリブが見つからない日</strong>はどうしたか?
+        ブレッチリー・パークの答えは大胆でした──<strong>ないなら、作ればいい</strong>。
+      </p>
+      <p>
+        彼らは英空軍に依頼して、<strong>わざと特定の海域に機雷を撒いてもらった</strong>のです。
+        するとドイツ軍は几帳面に「○○海域ニ機雷アリ、注意セヨ」と警報を打電する。
+        撒いた場所はこちらが決めたのだから、<strong>暗号文の中身をイギリス側が先に知っている</strong>ことになります。
+        完璧な鮮度のクリブが、狙った日に、狙った通信網に実る──この作戦を彼らは
+        <strong>「ガーデニング(種まき)」</strong>と呼びました。機雷という種を撒き、クリブという作物を収穫するわけです。
+      </p>
+      <p>
+        敵に嘘の行動をさせるのではなく、<strong>敵が正直に報告したくなる状況を作る</strong>という発想の転換。
+        暗号解読が机の上だけの戦いではなかったことを物語る、ブレッチリーらしいとんちの効いた一手です。
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 第6章 ボンベ ================= -->
+<section id="ch6">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">第 七 章</span><h2 class="serif">ボンベ ── 機械 対 機械</h2></div>
+    <div class="chap-de">The Bombe</div>
+
+    <div class="paper" data-stamp="ULTRA">
+      <h3>機械の速さで矛盾を探す</h3>
+      <p>
+        1939年、アラン・チューリングは(後にゴードン・ウェルチマンの改良を得て)<strong>ボンベ</strong>を設計しました。
+        高さ約2メートル、重さ約1トン。前面には円筒形のドラムがずらりと並び、その一つひとつがエニグマのローターと同じ働きをします。
+        1台のボンベは、実質的に<strong>36台のエニグマを同時に回す</strong>機械でした。
+      </p>
+      <p>
+        ボンベは暗号を「解く」のではなく、<strong>ありえない設定を高速で捨てていく</strong>機械です。
+        クリブと暗号文の対応関係(メニューと呼ばれる文字のつながりの図)を配線で再現し、
+        ローターを1位置ずつ回しながら電気的に矛盾を検査する。矛盾が出た設定は瞬時に棄却され、
+        矛盾なく電流が流れた位置でだけ機械が<strong>カチリと停止</strong>します。残った候補を人間が確認すれば、その日の鍵が手に入るのです。
+      </p>
+      <p class="src">REF: BOMBE「VICTORY」初稼働 1940年3月 — 大戦末期には約200台が24時間稼働した</p>
+    </div>
+
+    <figure class="photo tilt-r">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Wartime_picture_of_a_Bletchley_Park_Bombe.jpg?width=900" alt="第二次世界大戦中に撮影されたブレッチリー・パークのボンベ。大きな筐体の前面に円筒形のドラムが何列も並んでいる" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Wartime_picture_of_a_Bletchley_Park_Bombe.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>戦時中に撮影されたボンベの実物</b> — 前面に並ぶ円筒形のドラム一つひとつがエニグマのローターに相当する。操作の多くは海軍婦人部隊(Wrens)の女性たちが担った。<br>
+        <span class="credit">Photo: Public Domain — <a href="https://commons.wikimedia.org/wiki/File:Wartime_picture_of_a_Bletchley_Park_Bombe.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+      </figcaption>
+    </figure>
+
+    <div class="machine">
+      <div class="machine-label">Bombe Run — 鍵の探索を体験する</div>
+      <p style="font-size:14px;color:#b9bec6;max-width:760px;margin-bottom:10px">
+        傍受した暗号文(第六章と同じもの)の冒頭が「WETTERBERICHT」だと分かっているとします。
+        ローターの初期位置 17,576 通りをすべて検査し、クリブと矛盾しない位置を探します。
+        ※考え方を伝えるための簡略版です(ローター順は既知・プラグボードなしと仮定。実物のボンベはプラグボード込みの矛盾を電気回路で一瞬に検査しました)。
+      </p>
+      <div class="tape" style="margin:18px 0 24px">
+        <div class="row"><span class="lbl">傍受文</span><span class="txt" id="bombeCT" style="font-size:14px"></span></div>
+        <hr>
+        <div class="row"><span class="lbl">クリブ</span><span class="txt" style="font-size:14px;color:var(--red)">WETTERBERICHT(冒頭と推定)</span></div>
+      </div>
+
+      <div class="bombe-drums">
+        <div class="drum" id="drumL">A</div>
+        <div class="drum" id="drumM">A</div>
+        <div class="drum" id="drumR">A</div>
+      </div>
+      <div class="bombe-status" id="bombeStatus">待機中 — 検査済み 0 / 17,576</div>
+      <div class="bombe-bar"><i id="bombeBar"></i></div>
+      <div class="bombe-ctrl">
+        <button class="btn" id="bombeStart">探索を開始する</button>
+        <button class="btn ghost" id="bombeReset" disabled>リセット</button>
+      </div>
+
+      <div class="bombe-result" id="bombeResult">
+        <div style="text-align:center">
+          <div style="font-size:12px;letter-spacing:.3em;color:var(--brass);font-family:'Courier New',monospace">STOP — 機械が停止しました</div>
+          <div class="stop-tag" id="stopTag">T U R</div>
+          <div style="font-size:13px;color:var(--dim)">矛盾なく電流が流れた初期位置はこの1つだけ</div>
+          <div style="margin-top:18px"><button class="btn" id="decryptBtn">この鍵で全文を復号する</button></div>
+        </div>
+        <div class="tape" style="margin-top:22px;display:none" id="decryptTape">
+          <div class="row"><span class="lbl">復号文</span><span class="decrypted" id="decryptedText"></span></div>
+          <hr>
+          <div class="row"><span class="lbl">和 訳</span><span class="decrypted jp">気象報告 ── 英仏海峡上空に嵐の見込み(Xは語の区切り)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper column" data-stamp="ACTION THIS DAY">
+      <h3>チューリング、チャーチルに直訴する</h3>
+      <p>
+        ボンベは完成した。手法も確立した。それでも1941年秋のブレッチリー・パークは、
+        <strong>タイピストや事務員の不足</strong>という、あまりに地味な理由で解読が滞りつつありました。
+        何度かけあっても官僚機構は動かない。業を煮やしたチューリングら第6棟・第8棟の主要メンバー4人は、
+        組織の階段をぜんぶ飛ばして、<strong>チャーチル首相に直接手紙を書く</strong>という暴挙に出ます。
+        手紙は同僚の一人がロンドンのダウニング街10番地まで自ら運びました。
+      </p>
+      <p>
+        数日後、チャーチルが側近に走り書きしたメモが残っています──
+        <strong>「本日実行(Action This Day)。彼らの望むものを最優先ですべて与えよ。完了したら私に報告せよ」</strong>。
+        以後、人員と物資の詰まりは解消に向かいました。
+        チャーチルは後にブレッチリーの人々を「金の卵を産みながら、決して鳴かなかったガチョウたち」と評しています。
+        国家の頂点が、名もなき数学者たちの手紙に即日で応えた──暗号解読の価値を誰よりも理解していた証拠です。
+      </p>
+    </div>
+
+    <div class="paper" data-stamp="TOP SECRET ULTRA">
+      <h3>解読がもたらしたもの</h3>
+      <p>
+        ボンベが量産されると、ブレッチリー・パークは多い日に数千通のドイツ軍通信を読めるようになりました。
+        この情報は「ウルトラ」という最高機密のコードネームで扱われ、大西洋のUボートとの戦い、北アフリカ戦線、
+        ノルマンディー上陸作戦の成功を陰で支えました。歴史家の間では、解読が<strong>大戦を2年以上短縮し、
+        1,400万人以上の命を救った</strong>可能性があると評価されています。
+      </p>
+    </div>
+
+    <div class="paper column" data-stamp="PINCH OPERATIONS">
+      <h3>鍵は海の上にあった ── 命がけの「奪取」作戦</h3>
+      <p>
+        「ドイツの船から暗号の鍵を奪った」という話は、噂ではなく実話です。
+        ボンベがどれほど賢くても、特に海軍エニグマは手強く、<strong>ドイツ側の暗号書(その月の鍵設定表や、定型文の対応表)を現物で手に入れる</strong>ことが
+        解読の突破口になりました。ブレッチリー・パークはこれを「ピンチ(pinch=かっぱらい)」と呼び、海軍と組んで計画的に狙ったのです。
+      </p>
+      <p>
+        1941年5月、英駆逐艦ブルドッグは爆雷で浮上させた<strong>Uボート「U-110」</strong>に乗り込み、
+        エニグマ本体と暗号書一式を回収しました(U-110はその後沈没し、拿捕の事実は徹底的に秘匿されました)。
+        同じ年には北極海の<strong>気象観測船ミュンヘン、ラウエンブルク</strong>を狙って鍵表を奪取。
+        気象船を狙ったのは一石二鳥で、奪った気象暗号書は、第六章で見た「WETTERBERICHT」のような<strong>クリブの精度そのもの</strong>を高めてくれました。
+      </p>
+      <p>
+        最も壮絶なのは1942年10月の<strong>「U-559」</strong>です。地中海で浮上・自沈しつつあるUボートに、
+        英駆逐艦ペタードのファッソン大尉とグレイジャー水兵が泳ぎ着き、艦内から暗号書を運び出した直後、艦もろとも海に沈みました。
+        2人には最高位の民間人勲章ジョージ・クロスが追贈されています。このとき16歳の給仕トミー・ブラウンが持ち帰った短信暗号書が、
+        当時10か月も解読不能だった4ローター型海軍エニグマ「シャーク」をこじ開ける決定打になりました。
+      </p>
+      <p>
+        なお、映画『U-571』(2000年)では米軍がエニグマを奪う筋書きですが、これはフィクションです
+        (史実の主役は英海軍でした)。一方、1944年に米海軍が拿捕した<strong>「U-505」</strong>は実話で、
+        その艦体は現在もシカゴ科学産業博物館で実物を見ることができます。
+      </p>
+      <p class="src">※機械と数学だけでは戦えなかった──暗号戦とは、頭脳と勇気の総力戦だったのです。</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= エピローグ ================= -->
+<section id="epilogue">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">終 章</span><h2 class="serif">ブレッチリー・パークの人々</h2></div>
+    <div class="chap-de">Station X</div>
+
+    <figure class="photo portrait">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alan_Turing_Aged_16.jpg?width=600" alt="16歳のアラン・チューリングの肖像写真。1928年、シャーボーン校在学中に撮影されたもの" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Alan_Turing_Aged_16.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>アラン・チューリング(16歳)</b> — 1928年、シャーボーン校在学中。後の伝記の表紙にも使われた、最もよく知られた肖像のひとつ。<br>
+        <span class="credit">Photo: Public Domain — <a href="https://commons.wikimedia.org/wiki/File:Alan_Turing_Aged_16.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+      </figcaption>
+    </figure>
+    <div class="epi">
+      <div class="epi-item"><div class="y">1932</div><div class="t">ポーランド、最初の解読に成功</div><p>レイェフスキら3人の数学者が軍用エニグマを世界で初めて破る。1939年、その全成果が英仏に引き継がれた(第二章コラム参照)。</p></div>
+      <div class="epi-item"><div class="y">1939</div><div class="t">政府暗号学校、ブレッチリー・パークへ移転</div><p>ロンドン郊外の田舎屋敷に数学者・言語学者・チェスの名手・クロスワードの達人が集められた。最盛期には約9,000人が働き、その4分の3は女性だった。</p></div>
+      <div class="epi-item"><div class="y">1939–1942</div><div class="t">アラン・チューリングと第8棟(Hut 8)</div><p>チューリングは最難関だった海軍エニグマの解読を率いた。ボンベの設計に加え、確率と統計を駆使した手法「バンブリスムス」を考案。同僚たちは彼を「教授(Prof)」と呼んだ。</p></div>
+      <div class="epi-item"><div class="y">1945</div><div class="t">勝利、そして沈黙</div><p>戦争が終わっても功績は国家機密のままだった。関係者は家族にすら何も語らず、その存在が公になったのは1970年代である。</p></div>
+      <div class="epi-item"><div class="y">1952–1954</div><div class="t">チューリングの悲劇</div><p>戦後、チューリングは同性愛を理由に有罪判決を受け、1954年に41歳で世を去った。2009年に英国政府が公式に謝罪し、2013年に女王の恩赦が与えられた。現在、彼の肖像は50ポンド紙幣に描かれている。</p></div>
+      <div class="epi-item"><div class="y">現在</div><div class="t">博物館としてのブレッチリー・パーク</div><p>かつての「ステーションX」は博物館として公開され、復元されたボンベが当時と同じ音を立てて回っている。映画『イミテーション・ゲーム』(2014)は、この場所とチューリングの物語を世界に知らしめた。</p></div>
+    </div>
+
+    <div class="paper column" data-stamp="BLIND SPOT">
+      <h3>ドイツはなぜ、最後まで気づかなかったのか</h3>
+      <p>
+        船団は不自然に回避され、Uボートは待ち伏せされ、補給船は次々沈む──
+        ドイツ側も異変には気づいていて、<strong>「暗号が漏れているのでは」という調査を戦争中に何度も行っています</strong>。
+        しかし結論は毎回同じでした。「エニグマの鍵は天文学的な数だ。破られるはずがない」。
+        そして疑いの目は、スパイ、内通者、敵のレーダーや方位測定へと向けられていったのです。
+      </p>
+      <p>
+        皮肉なことに、第五章で見たあの巨大な数字──1垓5896京通り──への<strong>正当な自信こそが、最大の盲点</strong>になりました。
+        彼らは「総当たりは不可能」という点では完全に正しかった。
+        しかしブレッチリーは総当たりなどしていません。文字が自分自身にならない構造的な癖、決まり文句を打つ人間の癖、
+        そして奪取した暗号書──<strong>システムではなく、その周辺の弱さ</strong>を突いたのです。
+      </p>
+      <p>
+        「仕組みが数学的に強固だから、全体も安全だ」という思い込みの危うさ。
+        これは80年後の今、パスワードや暗号技術に囲まれて暮らす私たちにも、そっくりそのまま刺さる教訓ではないでしょうか。
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 訪問案内 ================= -->
+<section id="visit">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">案 内</span><h2 class="serif">ブレッチリー・パークを訪ねる</h2></div>
+    <div class="chap-de">Visit Bletchley Park</div>
+    <p class="lead">
+      このページで紹介した物語の舞台は、いまも英国に実在し、博物館として公開されています。
+      本物のエニグマが並び、復元されたボンベが当時と同じカチカチという音を立てて回る──
+      暗号の歴史が好きなら、一生に一度は訪れる価値のある場所です。
+    </p>
+
+    <div class="photo-pair">
+      <figure class="photo">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bletchley_Park_Mansion.jpg?width=800" alt="ブレッチリー・パークの本館。赤レンガと石造りが混ざった独特の様式のヴィクトリア朝の邸宅" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Bletchley_Park_Mansion.jpg" onerror="pf(this)">
+        <figcaption>
+          <b>本館(ザ・マンション)</b> — 暗号解読組織「政府暗号学校」が置かれたヴィクトリア朝の邸宅。<br>
+          <span class="credit">Photo: CC BY-SA 4.0 — <a href="https://commons.wikimedia.org/wiki/File:Bletchley_Park_Mansion.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+        </figcaption>
+      </figure>
+      <figure class="photo tilt-r">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/A_Turing_Bombe,_Bletchley_Park_-_geograph.org.uk_-_1590997.jpg?width=800" alt="ブレッチリー・パークで公開されている復元されたチューリング・ボンベ。赤茶色のドラムが整然と並ぶ" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:A_Turing_Bombe,_Bletchley_Park_-_geograph.org.uk_-_1590997.jpg" onerror="pf(this)">
+        <figcaption>
+          <b>復元されたボンベ</b> — 有志のエンジニアたちが十数年をかけて再建した動態展示。実演デモでは実際に稼働する。<br>
+          <span class="credit">Photo: CC BY-SA 2.0 — <a href="https://commons.wikimedia.org/wiki/File:A_Turing_Bombe,_Bletchley_Park_-_geograph.org.uk_-_1590997.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <figure class="photo">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alan_Turing's_Office_in_Hut_8_at_Bletchley_Park_-_geograph.org.uk_-_5111900.jpg?width=900" alt="ブレッチリー・パークの第8棟(Hut 8)内に復元されたアラン・チューリングの執務室。木製の机、当時の電話や書類が置かれた質素な部屋" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Alan_Turing%27s_Office_in_Hut_8_at_Bletchley_Park_-_geograph.org.uk_-_5111900.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>第8棟(Hut 8)に復元されたチューリングの執務室</b> — 海軍エニグマと格闘した「教授」の部屋が、質素な机と椅子まで当時のまま再現されている。現在のHut 8には、U-559から暗号書を持ち帰った駆逐艦にちなむ「HMSペタード展示」(第七章コラム参照)もある。<br>
+        <span class="credit">Photo: David Dixon, CC BY-SA 2.0 — <a href="https://commons.wikimedia.org/wiki/File:Alan_Turing%27s_Office_in_Hut_8_at_Bletchley_Park_-_geograph.org.uk_-_5111900.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+      </figcaption>
+    </figure>
+
+    <div class="visit-grid">
+      <div class="visit-card">
+        <div class="icon">🚂</div>
+        <h4>アクセス</h4>
+        <p>ロンドン・ユーストン駅から鉄道で約40分、「ブレッチリー(Bletchley)」駅下車。駅から入口までは徒歩5分ほど。ロンドンから日帰りで十分楽しめます。</p>
+      </div>
+      <div class="visit-card">
+        <div class="icon">🔑</div>
+        <h4>見どころ</h4>
+        <p>本物のエニグマの展示、チューリングが働いた第8棟(Hut 8)のオフィス再現、約50万枚のスレートを積んで作られたチューリング像など。じっくり見るなら半日〜1日。</p>
+      </div>
+      <div class="visit-card">
+        <div class="icon">⚙️</div>
+        <h4>動くボンベを見るなら</h4>
+        <p>稼働する復元ボンベは、同じ敷地内にある国立コンピューティング博物館(TNMOC)に展示されています(入場は別)。世界初の電子計算機の一つ「コロッサス」の復元機もここで動いています。</p>
+      </div>
+      <div class="visit-card">
+        <div class="icon">🎬</div>
+        <h4>映画ファンへ</h4>
+        <p>『イミテーション・ゲーム』の世界そのままの建物や芝生が広がります。チケットは1年間有効のシーズンパス方式なので、何度でも再訪できます。</p>
+      </div>
+    </div>
+
+    <div class="visit-cta">
+      <div class="t serif">本物に会いに行こう</div>
+      <p>
+        開館時間・料金・イベントの最新情報は公式サイトでご確認ください:<br>
+        <a href="https://www.bletchleypark.org.uk" target="_blank" rel="noopener">bletchleypark.org.uk</a>(ブレッチリー・パーク) ／
+        <a href="https://www.tnmoc.org" target="_blank" rel="noopener">tnmoc.org</a>(国立コンピューティング博物館)
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">・・・・・</div>
+
+<!-- ================= 次の一歩 ================= -->
+<section id="next">
+  <div class="wrap">
+    <div class="chap"><span class="chap-no">次 の 一 歩</span><h2 class="serif">物語の続きへ</h2></div>
+    <div class="chap-de">Weiterlesen — Read On</div>
+    <p class="lead">
+      このページで面白いと感じたなら、次はぜひ本物の名作へ。1冊と1本、これだけは自信を持っておすすめします。
+    </p>
+
+    <div class="next-cards">
+      <div class="next-card">
+        <div class="kind">📖 BOOK — 決定版の一冊</div>
+        <h4>『暗号解読』</h4>
+        <div class="by">サイモン・シン 著/青木薫 訳(新潮文庫・上下巻)</div>
+        <p>
+          古代の換字式暗号からエニグマ、そして量子暗号まで──「暗号を作る者」と「破る者」の2000年の知恵比べを、
+          極上のノンフィクションとして描く世界的ベストセラー。このサイトの第一章から第七章までの流れは、
+          まさに本書が最も熱く語る部分です。頻度分析でメアリー女王が処刑される章から、もう止まらなくなります。
+        </p>
+        <div class="next-links">
+          <a class="mini-btn" href="https://www.amazon.co.jp/s?k=%E6%9A%97%E5%8F%B7%E8%A7%A3%E8%AA%AD+%E3%82%B5%E3%82%A4%E3%83%A2%E3%83%B3%E3%83%BB%E3%82%B7%E3%83%B3" target="_blank" rel="noopener">Amazonで探す</a>
+          <a class="mini-btn" href="https://www.yodobashi.com/?word=%E6%9A%97%E5%8F%B7%E8%A7%A3%E8%AA%AD+%E3%82%B5%E3%82%A4%E3%83%A2%E3%83%B3%E3%83%BB%E3%82%B7%E3%83%B3" target="_blank" rel="noopener">ヨドバシで探す</a>
+        </div>
+      </div>
+
+      <div class="next-card">
+        <div class="kind">🎬 FILM — 映像で体感する</div>
+        <h4>『イミテーション・ゲーム/エニグマと天才数学者の秘密』</h4>
+        <div class="by">2014年/ベネディクト・カンバーバッチ主演/アカデミー賞脚色賞受賞</div>
+        <p>
+          ブレッチリー・パークのHut 8を舞台に、アラン・チューリングの栄光と孤独を描いた傑作。
+          このサイトで仕組みを知ってから観ると、ボンベが止まる瞬間、クリブに気づく食堂のシーン、
+          そのすべての意味が分かって、初見とはまったく違う映画体験になるはずです。
+        </p>
+        <div class="next-links">
+          <a class="mini-btn" href="https://www.netflix.com/search?q=%E3%82%A4%E3%83%9F%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%B2%E3%83%BC%E3%83%A0" target="_blank" rel="noopener">Netflixで探す</a>
+          <a class="mini-btn" href="https://www.youtube.com/results?search_query=%E3%82%A4%E3%83%9F%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%B2%E3%83%BC%E3%83%A0+%E6%98%A0%E7%94%BB" target="_blank" rel="noopener">YouTubeで探す</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="next-note">
+      ※配信・在庫状況は変わるため、リンクは検索結果ページにしています。<br>
+      さらに深く知りたい方には、映画の原作となった評伝、アンドルー・ホッジス『エニグマ アラン・チューリング伝』(上下巻)もおすすめです。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="mono">WE WERE NEVER HERE — 私たちはここにいなかった</div>
+  <p>
+    シミュレーターはエニグマI(ローターI〜V/リフレクターB/ダブルステッピング含む)の実機配線を忠実に再現しています。<br>
+    写真はWikimedia Commonsより(パブリックドメインおよびCCライセンス・各キャプションに出典リンクあり)。表示にはインターネット接続が必要です。<br>
+    アラン・チューリングと、沈黙を守り続けたブレッチリー・パークのすべての人々に敬意を込めて。
+  </p>
+</footer>
+
+<script>
+/* ================== ENIGMA CORE ================== */
+const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const ROTORS={
+  I:{w:'EKMFLGDQVZNTOWYHXUSPAIBRCJ',n:'Q'},
+  II:{w:'AJDKSIRUXBLHWTMCQGZNPYFVOE',n:'E'},
+  III:{w:'BDFHJLCPRTXVZNYEIWGAKMUSQO',n:'V'},
+  IV:{w:'ESOVPZJAYQUIRHXLNFTGKDCMWB',n:'J'},
+  V:{w:'VZBRGITYUPSDNHLXAWMJQOFECK',n:'Z'}
+};
+const REFB='YRUHQSLDPXNGOKMIEBFZCWVJAT';
+const ci=c=>c.charCodeAt(0)-65;
+const cl=n=>A[((n%26)+26)%26];
+
+function Machine(order,rings,pos,plugPairs){
+  this.rot=order.map((name,k)=>({w:ROTORS[name].w,n:ROTORS[name].n,ring:ci(rings[k]),pos:ci(pos[k])}));
+  this.plug={};
+  for(const c of A)this.plug[c]=c;
+  for(const[a,b]of plugPairs){this.plug[a]=b;this.plug[b]=a;}
+}
+Machine.prototype.step=function(){
+  const[l,m,r]=this.rot;
+  if(A[m.pos]===m.n){m.pos=(m.pos+1)%26;l.pos=(l.pos+1)%26;}
+  else if(A[r.pos]===r.n){m.pos=(m.pos+1)%26;}
+  r.pos=(r.pos+1)%26;
+};
+function fwd(r,c){const s=r.pos-r.ring;return cl(ci(r.w[((ci(c)+s)%26+26)%26])-s);}
+function bwd(r,c){const s=r.pos-r.ring;return cl(r.w.indexOf(cl(ci(c)+s))-s);}
+Machine.prototype.enc=function(c){
+  this.step();
+  let x=this.plug[c];
+  x=fwd(this.rot[2],x);x=fwd(this.rot[1],x);x=fwd(this.rot[0],x);
+  x=REFB[ci(x)];
+  x=bwd(this.rot[0],x);x=bwd(this.rot[1],x);x=bwd(this.rot[2],x);
+  return this.plug[x];
+};
+Machine.prototype.encTrace=function(c){
+  this.step();
+  const t=[c];
+  let x=this.plug[c];t.push(x);
+  x=fwd(this.rot[2],x);t.push(x);
+  x=fwd(this.rot[1],x);t.push(x);
+  x=fwd(this.rot[0],x);t.push(x);
+  x=REFB[ci(x)];t.push(x);
+  x=bwd(this.rot[0],x);t.push(x);
+  x=bwd(this.rot[1],x);t.push(x);
+  x=bwd(this.rot[2],x);t.push(x);
+  x=this.plug[x];t.push(x);
+  return t;
+};
+
+/* ================== HERO DECODE ================== */
+(function(){
+  const el=document.getElementById('heroTitle');
+  const target='ENIGMA';
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){el.textContent=target;return;}
+  let frame=0;
+  const iv=setInterval(()=>{
+    frame++;
+    let out='';
+    for(let k=0;k<target.length;k++){
+      out += frame > k*7+12 ? target[k] : A[Math.floor(Math.random()*26)];
+    }
+    el.textContent=out;
+    if(out===target)clearInterval(iv);
+  },45);
+})();
+
+/* ================== ODOMETER DEMO ================== */
+(function(){
+  const m=new Machine(['I','II','III'],'AAA','ADT',[]);
+  const L=document.getElementById('odoL'),M=document.getElementById('odoM'),R=document.getElementById('odoR');
+  function render(){
+    L.firstChild.nodeValue=A[m.rot[0].pos];
+    M.firstChild.nodeValue=A[m.rot[1].pos];
+    R.firstChild.nodeValue=A[m.rot[2].pos];
+  }
+  render();
+  document.getElementById('odoBtn').addEventListener('click',()=>{m.step();render();});
+})();
+
+/* ================== SIMULATOR ================== */
+const KB_ROWS=[['Q','W','E','R','T','Z','U','I','O'],['A','S','D','F','G','H','J','K'],['P','Y','X','C','V','B','N','M','L']];
+const sim={order:['II','I','III'],rings:[0,0,0],pos:[0,0,0],plugs:[],in:'',out:''};
+
+function buildBoards(){
+  const kb=document.getElementById('keyboard'),lb=document.getElementById('lampboard');
+  KB_ROWS.forEach(row=>{
+    const kr=document.createElement('div');kr.className='kb-row';
+    const lr=document.createElement('div');lr.className='kb-row';
+    row.forEach(ch=>{
+      const k=document.createElement('button');k.className='key';k.textContent=ch;
+      k.setAttribute('aria-label',ch+'キー');
+      k.addEventListener('click',()=>pressKey(ch));
+      kr.appendChild(k);
+      const l=document.createElement('div');l.className='lamp';l.id='lamp'+ch;l.textContent=ch;
+      lr.appendChild(l);
+    });
+    kb.appendChild(kr);lb.appendChild(lr);
+  });
+}
+function fillRingSelects(){
+  ['ringL','ringM','ringR'].forEach(id=>{
+    const s=document.getElementById(id);
+    for(const c of A){const o=document.createElement('option');o.textContent=c;s.appendChild(o);}
+  });
+}
+function parsePlugs(){
+  const inp=document.getElementById('plugInput');
+  const err=document.getElementById('plugErr');
+  const raw=inp.value.toUpperCase().replace(/[^A-Z\s]/g,'');
+  const toks=raw.trim().split(/\s+/).filter(Boolean);
+  const pairs=[];const used=new Set();let bad=false;
+  for(const t of toks){
+    if(t.length!==2||t[0]===t[1]){bad=true;break;}
+    if(used.has(t[0])||used.has(t[1])){bad=true;break;}
+    used.add(t[0]);used.add(t[1]);pairs.push([t[0],t[1]]);
+    if(pairs.length>13){bad=true;break;}
+  }
+  err.style.display=bad?'block':'none';
+  err.textContent=bad?'入力が正しくありません(2文字ペア・重複なし・最大13組)':'';
+  return bad?[]:pairs;
+}
+function simSettings(){
+  sim.order=[document.getElementById('selL').value,document.getElementById('selM').value,document.getElementById('selR').value];
+  sim.rings=[document.getElementById('ringL').selectedIndex,document.getElementById('ringM').selectedIndex,document.getElementById('ringR').selectedIndex];
+  sim.plugs=parsePlugs();
+  document.getElementById('nameL').textContent=sim.order[0];
+  document.getElementById('nameM').textContent=sim.order[1];
+  document.getElementById('nameR').textContent=sim.order[2];
+}
+function renderWindows(){
+  ['winL','winM','winR'].forEach((id,k)=>{
+    const w=document.getElementById(id);
+    w.textContent=A[sim.pos[k]];
+    w.classList.remove('tick');void w.offsetWidth;w.classList.add('tick');
+  });
+}
+let lampTimer=null;
+function pressKey(ch){
+  simSettings();
+  const m=new Machine(sim.order, sim.rings.map(r=>A[r]), sim.pos.map(p=>A[p]), sim.plugs);
+  const t=m.encTrace(ch);
+  sim.pos=m.rot.map(r=>r.pos);
+  renderWindows();
+  // lamp
+  document.querySelectorAll('.lamp.on').forEach(l=>l.classList.remove('on'));
+  const lamp=document.getElementById('lamp'+t[9]);
+  lamp.classList.add('on');
+  clearTimeout(lampTimer);
+  lampTimer=setTimeout(()=>lamp.classList.remove('on'),900);
+  // tape
+  sim.in+=ch;sim.out+=t[9];
+  const g=s=>s.replace(/(.{5})/g,'$1 ');
+  document.getElementById('tapeIn').textContent=g(sim.in);
+  document.getElementById('tapeOut').textContent=g(sim.out);
+  // trace
+  const stages=['打鍵','プラグ','ローター'+sim.order[2],'ローター'+sim.order[1],'ローター'+sim.order[0],'反射板','ローター'+sim.order[0],'ローター'+sim.order[1],'ローター'+sim.order[2],'点灯'];
+  document.getElementById('trace').innerHTML=t.map((c,k)=>
+    '<span><span class="st">'+stages[k]+'</span> <b>'+c+'</b></span>'
+  ).join('<span class="ar">→</span>');
+}
+function bindSim(){
+  document.querySelectorAll('.step-btns button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const r=+b.dataset.r,d=+b.dataset.d;
+      sim.pos[r]=((sim.pos[r]+d)%26+26)%26;
+      renderWindows();
+    });
+  });
+  ['selL','selM','selR','ringL','ringM','ringR'].forEach(id=>
+    document.getElementById(id).addEventListener('change',simSettings));
+  document.getElementById('plugInput').addEventListener('input',parsePlugs);
+  document.getElementById('resetBtn').addEventListener('click',()=>{
+    sim.pos=[0,0,0];sim.in='';sim.out='';
+    renderWindows();
+    document.getElementById('tapeIn').innerHTML='&nbsp;';
+    document.getElementById('tapeOut').innerHTML='&nbsp;';
+    document.getElementById('trace').innerHTML='<span style="color:#565b64">キーを押すと、電流の旅(9段階の変換)がここに表示されます</span>';
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    const tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+    const ch=e.key.toUpperCase();
+    if(ch.length===1&&A.includes(ch)){pressKey(ch);e.preventDefault();}
+  });
+}
+buildBoards();fillRingSelects();bindSim();simSettings();renderWindows();
+
+/* ================== CRIB SLIDER ================== */
+const BOMBE_CT='XZMRKTSYLPUUJSLKKPJNFNAJNNLBTWDFXFQEZVTFNCSH';
+const BOMBE_PT='WETTERBERICHTXSTURMXUEBERXDEMXKANALXERWARTET';
+const CRIB='WETTERBERICHT';
+let cribOff=5;
+const CRIB_SHOW=28; // show first 28 chars of ciphertext
+function renderCrib(){
+  const g=document.getElementById('cribGrid');
+  let html='';
+  // index row
+  html+='<div class="crib-line">';
+  for(let k=0;k<CRIB_SHOW;k++)html+='<div class="cc idx">'+(k+1)+'</div>';
+  html+='</div>';
+  // ciphertext row
+  html+='<div class="crib-line">';
+  for(let k=0;k<CRIB_SHOW;k++)html+='<div class="cc ct">'+BOMBE_CT[k]+'</div>';
+  html+='</div>';
+  // crib row
+  html+='<div class="crib-line">';
+  let hits=0;
+  for(let k=0;k<CRIB_SHOW;k++){
+    const j=k-cribOff;
+    if(j>=0&&j<CRIB.length){
+      const hit=CRIB[j]===BOMBE_CT[k];
+      if(hit)hits++;
+      html+='<div class="cc cb'+(hit?' hit':'')+'">'+CRIB[j]+'</div>';
+    }else html+='<div class="cc blank"></div>';
+  }
+  html+='</div>';
+  g.innerHTML=html;
+  const v=document.getElementById('cribVerdict');
+  if(hits>0){v.textContent='✗ この位置はありえない('+hits+'文字が一致 — 文字は自分自身にならない)';v.className='crib-verdict ng';}
+  else{v.textContent='○ この位置は候補として残る(一致なし)';v.className='crib-verdict ok';}
+}
+document.getElementById('cribL').addEventListener('click',()=>{cribOff=Math.max(0,cribOff-1);renderCrib();});
+document.getElementById('cribR').addEventListener('click',()=>{cribOff=Math.min(CRIB_SHOW-CRIB.length,cribOff+1);renderCrib();});
+renderCrib();
+
+/* ================== BOMBE DEMO ================== */
+document.getElementById('bombeCT').textContent=BOMBE_CT.replace(/(.{5})/g,'$1 ');
+const drumL=document.getElementById('drumL'),drumM=document.getElementById('drumM'),drumR=document.getElementById('drumR');
+const bStatus=document.getElementById('bombeStatus'),bBar=document.getElementById('bombeBar');
+let bombeRunning=false;
+function bombeTry(idx){ // idx 0..17575 -> position letters
+  const a=Math.floor(idx/676),b=Math.floor(idx/26)%26,c=idx%26;
+  const pos=A[a]+A[b]+A[c];
+  const m=new Machine(['I','II','III'],'AAA',pos,[]);
+  let e='';
+  for(const ch of CRIB){e+=m.enc(ch);if(e.length<=CRIB.length&&BOMBE_CT[e.length-1]!==e[e.length-1])return{pos,ok:false};}
+  return {pos,ok:e===BOMBE_CT.slice(0,CRIB.length)};
+}
+document.getElementById('bombeStart').addEventListener('click',()=>{
+  if(bombeRunning)return;
+  bombeRunning=true;
+  document.getElementById('bombeStart').disabled=true;
+  document.getElementById('bombeReset').disabled=true;
+  document.getElementById('bombeResult').classList.remove('show');
+  document.getElementById('decryptTape').style.display='none';
+  [drumL,drumM,drumR].forEach(d=>d.classList.add('spin'));
+  let idx=0;const total=17576;const stops=[];
+  const CHUNK=180;
+  function frame(){
+    const end=Math.min(idx+CHUNK,total);
+    for(;idx<end;idx++){
+      const r=bombeTry(idx);
+      if(r.ok)stops.push(r.pos);
+    }
+    const last=idx-1,a=Math.floor(last/676),b=Math.floor(last/26)%26,c=last%26;
+    drumL.textContent=A[a];drumM.textContent=A[b];drumR.textContent=A[c];
+    bStatus.innerHTML='探索中… 検査済み <b>'+idx.toLocaleString()+'</b> / 17,576 — 停止 '+stops.length+' 件';
+    bBar.style.width=(idx/total*100)+'%';
+    if(idx<total){requestAnimationFrame(frame);}
+    else{
+      [drumL,drumM,drumR].forEach(d=>d.classList.remove('spin'));
+      const s=stops[0]||'???';
+      drumL.textContent=s[0];drumM.textContent=s[1];drumR.textContent=s[2];
+      bStatus.innerHTML='完了 — 17,576通りのうち、矛盾しなかったのは <b>'+stops.length+'</b> 件';
+      document.getElementById('stopTag').textContent=s.split('').join(' ');
+      document.getElementById('bombeResult').classList.add('show');
+      document.getElementById('bombeReset').disabled=false;
+      bombeRunning=false;
+    }
+  }
+  requestAnimationFrame(frame);
+});
+document.getElementById('bombeReset').addEventListener('click',()=>{
+  document.getElementById('bombeStart').disabled=false;
+  document.getElementById('bombeResult').classList.remove('show');
+  document.getElementById('decryptTape').style.display='none';
+  bBar.style.width='0%';
+  drumL.textContent='A';drumM.textContent='A';drumR.textContent='A';
+  bStatus.textContent='待機中 — 検査済み 0 / 17,576';
+});
+document.getElementById('decryptBtn').addEventListener('click',()=>{
+  const m=new Machine(['I','II','III'],'AAA','TUR',[]);
+  let out='';for(const ch of BOMBE_CT)out+=m.enc(ch);
+  document.getElementById('decryptedText').textContent=out.replace(/X/g,' · ');
+  document.getElementById('decryptTape').style.display='block';
+});
+
+/* ================== CAESAR DEMO ================== */
+(function(){
+  const inp=document.getElementById('caesarIn');
+  const sh=document.getElementById('caesarShift');
+  function caesar(){
+    const s=+sh.value;
+    document.getElementById('caesarShiftV').textContent=s;
+    const raw=inp.value.toUpperCase().replace(/[^A-Z ]/g,'');
+    document.getElementById('caesarPlain').textContent=raw||'\u00a0';
+    let out='';
+    for(const c of raw)out+= c===' '?' ':cl(ci(c)+s);
+    document.getElementById('caesarOut').textContent=out||'\u00a0';
+  }
+  inp.addEventListener('input',caesar);
+  sh.addEventListener('input',caesar);
+  caesar();
+})();
+
+/* ================== FREQUENCY ANALYSIS DEMO ================== */
+(function(){
+  const FREQ_PT='MEETMEATTHEBRIDGEATMIDNIGHTTHEATTACKTARGETSTHEHARBOURSENDREINFORCEMENTSBEFORETHEWEEKEND';
+  const FREQ_SHIFT=10;
+  let ct='';for(const c of FREQ_PT)ct+=cl(ci(c)+FREQ_SHIFT);
+  document.getElementById('freqCT').textContent=ct.replace(/(.{5})/g,'$1 ');
+  document.getElementById('freqBtn1').addEventListener('click',()=>{
+    const counts={};let max=0,top='A';
+    for(const c of A)counts[c]=0;
+    for(const c of ct){counts[c]++;if(counts[c]>max){max=counts[c];top=c;}}
+    const chart=document.getElementById('freqChart');
+    chart.innerHTML='';
+    for(const c of A){
+      const col=document.createElement('div');
+      col.className='freq-col'+(c===top?' top':'');
+      const h=max?Math.round(counts[c]/max*100):0;
+      col.innerHTML='<span class="fn">'+(counts[c]||'')+'</span><div class="freq-bar" style="height:0%"></div><span class="fl">'+c+'</span>';
+      chart.appendChild(col);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{col.querySelector('.freq-bar').style.height=h+'%';}));
+    }
+    chart.style.display='flex';
+    const guess=((ci(top)-ci('E'))%26+26)%26;
+    document.getElementById('freqTop').textContent=top;
+    document.getElementById('freqTop2').textContent=top;
+    document.getElementById('freqShift').textContent=guess;
+    document.getElementById('freqStep2').style.display='block';
+    document.getElementById('freqBtn2').onclick=()=>{
+      let pt='';for(const c of ct)pt+=cl(ci(c)-guess);
+      document.getElementById('freqPT').textContent=pt.replace(/(.{5})/g,'$1 ');
+      document.getElementById('freqResult').style.display='block';
+    };
+  });
+})();
+</script>
+</body>
+</html>
