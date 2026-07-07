@@ -141,6 +141,18 @@ p.lead{color:#c4c8cf;max-width:760px}
   font-family:"Courier New",monospace;letter-spacing:.12em;
 }
 .flow-note{font-size:13.5px;color:#b9bec6;margin-top:18px}
+/* ===== signal path SVG ===== */
+.sig-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sig-svg{display:block;width:100%;min-width:560px;height:auto}
+.sig-svg .seg{opacity:0;transition:opacity .18s}
+.sig-svg .seg.f{stroke:#ffe49a;filter:drop-shadow(0 0 4px rgba(255,206,94,.8))}
+.sig-svg .seg.r{stroke:#e07b6a;filter:drop-shadow(0 0 4px rgba(224,123,106,.8))}
+.sig-svg .seg.on{opacity:1}
+.sig-svg .lb{opacity:0;transition:opacity .25s}
+.sig-svg .lb.on{opacity:1}
+#sigLamp.lit{fill:#ffe49a;stroke:#ffce5e;filter:drop-shadow(0 0 10px rgba(255,206,94,.9))}
+#sigLampTxt.lit{fill:#4a3508}
+#sigKey.press{fill:#3a3d46}
 
 /* ===== Rotor odometer demo ===== */
 .odo{display:flex;gap:14px;justify-content:center;align-items:center;margin:18px 0}
@@ -241,6 +253,18 @@ input[type=text]{
 .tape hr{border:none;border-top:1px dashed rgba(43,37,25,.3);margin:10px 0}
 .sim-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:center}
 .sim-tip{font-size:12px;color:var(--dim)}
+/* ===== sound ===== */
+.morse-ctrl{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.morse-display{
+  font-size:20px;letter-spacing:.18em;color:var(--lamp);min-height:28px;
+  text-shadow:0 0 14px rgba(255,206,94,.4);
+}
+.morse-display .cur{color:var(--brass);font-size:13px;letter-spacing:.3em;vertical-align:2px;margin-left:10px}
+.snd-btn{
+  background:#24262d;color:var(--brass);border:1px solid var(--line);
+  padding:9px 16px;font-size:12.5px;cursor:pointer;letter-spacing:.08em;font-family:inherit;
+}
+.snd-btn[aria-pressed="true"]{background:var(--brass);color:#181208;border-color:var(--brass)}
 
 /* trace */
 .trace{
@@ -470,6 +494,17 @@ input[type=range]::-moz-range-thumb{
 }
 .mini-btn:hover{background:var(--brass);color:#181208}
 .next-note{font-size:11.5px;color:#6b7078;text-align:center;margin-top:6px}
+/* ===== video embed ===== */
+.video-block{margin:34px 0 8px}
+.video-lead{font-size:14px;color:#b9bec6;max-width:760px;margin:0 0 16px;line-height:1.9}
+.video-embed{
+  position:relative;width:100%;aspect-ratio:16/9;background:#0d0e11;
+  border:1px solid var(--line);border-top:3px solid var(--brass-dim);
+  box-shadow:0 16px 44px rgba(0,0,0,.55);
+}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-fallback{font-size:12px;color:#6b7078;text-align:center;margin-top:10px}
+.video-fallback a{color:var(--brass)}
 
 /* photo fallback placeholder */
 .ph-fb{
@@ -507,6 +542,10 @@ function pf(img){
     それを打ち破ったのが、アラン・チューリングたちが<em>ブレッチリー・パーク</em>で作り上げた機械「ボンベ」である。
     このページでは、その仕組みを<em>実際に動くデモ</em>で体験できます。
   </p>
+  <div class="morse-ctrl">
+    <button class="btn ghost" id="morseBtn">📻 モールス信号を受信する</button>
+    <div class="morse-display mono" id="morseDisplay" aria-live="polite">&nbsp;</div>
+  </div>
   <div class="hero-scroll">SCROLL</div>
 </header>
 
@@ -666,6 +705,32 @@ function pf(img){
       </figcaption>
     </figure>
 
+    <div class="paper" data-stamp="DER ERFINDER">
+      <h3>エニグマを作った男 ── アルトゥール・シェルビウス</h3>
+      <p>
+        アルトゥール・シェルビウス(1878–1929)はフランクフルト生まれの電気技師です。
+        ミュンヘン工科大学などで電気工学を修めた根っからの発明家で、モーターの研究では自分の名を冠した方式(シェルビウス方式)を残し、
+        電気枕のような生活用品まで手がけていました。
+        第一次大戦末期の1918年、彼は回転する配線円盤で文字を置き換える暗号機の特許を出願します。
+        名付けた商品名は、ギリシャ語で「謎」を意味する──<strong>エニグマ</strong>。
+      </p>
+      <p>
+        意外なことに、エニグマはもともと<strong>軍用ではなく商用</strong>でした。
+        シェルビウスは銀行や企業に「通信の秘密を守る機械」として売り込んだのです。
+        初期モデルはレジスターほどの大きさで重さ約50kg。高価なうえ時代も早すぎて、商売はさっぱりでした。
+        転機は1926年、ドイツ海軍が採用を決めたことです。以後、陸軍にも広がり、
+        彼の機械は国家の通信を担う存在になっていきます。
+      </p>
+      <p>
+        しかしシェルビウス本人は、1929年、ベルリン近郊で<strong>馬車の事故により急逝</strong>します。
+        自分の発明が世界大戦の中枢を担ったことも、そしてポーランドの数学者たちに破られたことも、彼は知らないままでした。
+      </p>
+      <p class="src">
+        ※本人と確実に確認できる写真はほとんど現存しません。ネット上で「シェルビウスの肖像」として流通する写真の多くは、
+        皮肉にも彼の暗号を最初に破ったレイェフスキ(次のコラム参照)の写真の誤用です──発明者の顔は、征服者の顔にすり替わってしまったのです。
+      </p>
+    </div>
+
     <div class="paper column" data-stamp="POLSKA 1932">
       <h3>最初にエニグマを破ったのは、ポーランドだった</h3>
       <p>
@@ -686,8 +751,16 @@ function pf(img){
         ブレッチリー・パークの快進撃は、この「ポーランドからの贈り物」の上に築かれたのです。
         現在ポズナンには3人を記念する暗号博物館があり、ブレッチリー・パークにも顕彰碑が立っています。
       </p>
-      <p class="src">※発明者はドイツの技師アルトゥール・シェルビウス(1918年)。ポーランドが担ったのは「最初に破る」という偉業のほうです。</p>
+      <p class="src">※こうしてバトンは渡ります──発明したドイツ、最初に破ったポーランド、そして解読を産業にしたイギリスへ。</p>
     </div>
+
+    <figure class="photo tilt-r">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Enigma_deszyfranci.jpg?width=900" alt="エニグマを最初に解読した3人のポーランド人数学者の肖像写真。左からマリアン・レイェフスキ、イェジ・ルジツキ、ヘンリク・ジガルスキ" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:Enigma_deszyfranci.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>エニグマを最初に破った3人</b> — 左から、マリアン・レイェフスキ(1932年に最初の解読を成し遂げた)、イェジ・ルジツキ(「時計法」を考案。1942年、地中海の船舶事故で32歳で死去)、ヘンリク・ジガルスキ(穿孔シート「ジガルスキ・シート」を考案。戦後は英国で数学講師に)。3人とも当時20代の、ポズナン大学出身の数学者だった。<br>
+        <span class="credit">Photo: Wikimedia Commons — <a href="https://commons.wikimedia.org/wiki/File:Enigma_deszyfranci.jpg" target="_blank" rel="noopener">出典・ライセンス</a></span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -704,21 +777,99 @@ function pf(img){
     </p>
 
     <div class="machine">
-      <div class="machine-label">Signal Path — 信号の経路</div>
-      <div class="flow">
-        <div class="flow-box"><div class="t">キーボード</div><div class="s">TASTATUR</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="t">プラグボード</div><div class="s">STECKER</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="t">ローター×3</div><div class="s">WALZEN</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="t">リフレクター</div><div class="s">UKW</div></div>
+      <div class="machine-label">Signal Path — 電流の旅を見る</div>
+      <p style="font-size:14px;color:#b9bec6;margin-bottom:14px">
+        「<b style="color:var(--lamp)">A</b>」のキーを押したときの電流の旅です。ボタンを押すと、
+        <span style="color:var(--lamp)">行き(金色)</span>と<span style="color:#e07b6a">帰り(赤色)</span>の道が順番に光ります。
+        ローターを通るたびに文字が変換され、反射板で折り返して、最後にランプが点きます。
+        ※文字は実際の変換値です(ローターI II III・初期位置AAA・プラグ接続なし)
+      </p>
+      <div style="text-align:center;margin-bottom:12px">
+        <button class="btn" id="sigBtn">▶ 電流を流してみる</button>
       </div>
-      <div class="flow-back">←── 電流は反射板で折り返し、同じ道を逆向きに通ってランプを点灯させる ──→</div>
+      <div class="sig-wrap">
+        <svg class="sig-svg" viewBox="0 0 660 375" xmlns="http://www.w3.org/2000/svg" aria-label="エニグマの信号経路図:キーからプラグボード、3枚のローター、反射板を経てランプに戻る電流の道">
+          <!-- 装置の箱 -->
+          <g font-family="Courier New,monospace" text-anchor="middle">
+            <!-- リフレクター -->
+            <rect x="30" y="90" width="65" height="245" rx="6" fill="#181a1f" stroke="#3a3d46"/>
+            <text x="62" y="76" fill="#c8a45e" font-size="13">反射板</text>
+            <path d="M62,150 C44,150 44,180 62,180 M62,230 C44,230 44,260 62,260" stroke="#3a3d46" fill="none" stroke-width="2"/>
+            <!-- ローター左 -->
+            <rect x="120" y="90" width="80" height="245" rx="6" fill="#181a1f" stroke="#3a3d46"/>
+            <text x="160" y="76" fill="#c8a45e" font-size="13">ローター 左</text>
+            <path d="M130,140 l60,18 M130,190 l60,-24 M130,250 l60,30" stroke="#33363e" stroke-width="2"/>
+            <!-- ローター中 -->
+            <rect x="225" y="90" width="80" height="245" rx="6" fill="#181a1f" stroke="#3a3d46"/>
+            <text x="265" y="76" fill="#c8a45e" font-size="13">ローター 中</text>
+            <path d="M235,130 l60,34 M235,210 l60,-40 M235,270 l60,20" stroke="#33363e" stroke-width="2"/>
+            <!-- ローター右 -->
+            <rect x="330" y="90" width="80" height="245" rx="6" fill="#181a1f" stroke="#3a3d46"/>
+            <text x="370" y="76" fill="#c8a45e" font-size="13">ローター 右</text>
+            <text x="370" y="356" fill="#9aa1ab" font-size="11">↻ 一文字ごとに回転</text>
+            <path d="M340,135 l60,28 M340,200 l60,-36 M340,265 l60,24" stroke="#33363e" stroke-width="2"/>
+            <!-- プラグボード -->
+            <rect x="435" y="90" width="80" height="245" rx="6" fill="#181a1f" stroke="#3a3d46"/>
+            <text x="475" y="76" fill="#c8a45e" font-size="13">プラグボード</text>
+            <circle cx="455" cy="130" r="4" fill="#33363e"/><circle cx="495" cy="130" r="4" fill="#33363e"/>
+            <circle cx="455" cy="165" r="4" fill="#33363e"/><circle cx="495" cy="165" r="4" fill="#33363e"/>
+            <circle cx="455" cy="265" r="4" fill="#33363e"/><circle cx="495" cy="265" r="4" fill="#33363e"/>
+            <!-- キーとランプ -->
+            <circle id="sigKey" cx="600" cy="300" r="20" fill="#24262d" stroke="#41444d" stroke-width="2"/>
+            <text x="600" y="306" fill="#cdd1d8" font-size="17" font-weight="bold">A</text>
+            <text x="600" y="345" fill="#9aa1ab" font-size="12">① キーを押す</text>
+            <circle id="sigLamp" cx="600" cy="94" r="20" fill="#15140f" stroke="#3b382c" stroke-width="2"/>
+            <text id="sigLampTxt" x="600" y="100" fill="#6b6650" font-size="17" font-weight="bold">B</text>
+            <text x="600" y="52" fill="#9aa1ab" font-size="12">⑤ ランプが点く</text>
+            <!-- 番号ガイド -->
+            <text x="475" y="356" fill="#9aa1ab" font-size="11">② 入れ替え</text>
+            <text x="212" y="356" fill="#9aa1ab" font-size="11">③ 3回変換</text>
+            <text x="62" y="356" fill="#9aa1ab" font-size="11">④ 折り返し</text>
+          </g>
+          <!-- 経路(薄い下書き) -->
+          <g stroke="#3a3d46" stroke-width="2" fill="none" opacity=".55">
+            <path d="M580,300 L515,300 L435,300 L410,300 L330,266 L305,266 L225,232 L200,232 L120,198 L95,198 C 48,198 48,128 95,128 L120,128 L200,118 L225,118 L305,106 L330,106 L410,94 L435,94 L515,94 L580,94"/>
+          </g>
+          <!-- 経路(点灯用セグメント) -->
+          <g fill="none" stroke-width="3.5" stroke-linecap="round">
+            <path class="seg f" d="M580,300 L515,300"/>
+            <path class="seg f" d="M515,300 L435,300"/>
+            <path class="seg f" d="M435,300 L410,300"/>
+            <path class="seg f" d="M410,300 L330,266"/>
+            <path class="seg f" d="M330,266 L305,266"/>
+            <path class="seg f" d="M305,266 L225,232"/>
+            <path class="seg f" d="M225,232 L200,232"/>
+            <path class="seg f" d="M200,232 L120,198"/>
+            <path class="seg f" d="M120,198 L95,198"/>
+            <path class="seg f" d="M95,198 C 48,198 48,128 95,128"/>
+            <path class="seg r" d="M95,128 L120,128"/>
+            <path class="seg r" d="M120,128 L200,118"/>
+            <path class="seg r" d="M200,118 L225,118"/>
+            <path class="seg r" d="M225,118 L305,106"/>
+            <path class="seg r" d="M305,106 L330,106"/>
+            <path class="seg r" d="M330,106 L410,94"/>
+            <path class="seg r" d="M410,94 L435,94"/>
+            <path class="seg r" d="M435,94 L515,94"/>
+            <path class="seg r" d="M515,94 L580,94"/>
+          </g>
+          <!-- 変換された文字のバブル -->
+          <g font-family="Courier New,monospace" text-anchor="middle" font-size="14" font-weight="bold">
+            <g class="lb" data-seg="2"><circle cx="422" cy="300" r="12" fill="#2b2519" stroke="#c8a45e"/><text x="422" y="305" fill="#ffe49a">A</text></g>
+            <g class="lb" data-seg="4"><circle cx="317" cy="266" r="12" fill="#2b2519" stroke="#c8a45e"/><text x="317" y="271" fill="#ffe49a">C</text></g>
+            <g class="lb" data-seg="6"><circle cx="212" cy="232" r="12" fill="#2b2519" stroke="#c8a45e"/><text x="212" y="237" fill="#ffe49a">D</text></g>
+            <g class="lb" data-seg="8"><circle cx="107" cy="198" r="12" fill="#2b2519" stroke="#c8a45e"/><text x="107" y="203" fill="#ffe49a">F</text></g>
+            <g class="lb" data-seg="10"><circle cx="107" cy="128" r="12" fill="#3a1f1a" stroke="#e07b6a"/><text x="107" y="133" fill="#e07b6a">S</text></g>
+            <g class="lb" data-seg="12"><circle cx="212" cy="118" r="12" fill="#3a1f1a" stroke="#e07b6a"/><text x="212" y="123" fill="#e07b6a">S</text></g>
+            <g class="lb" data-seg="14"><circle cx="317" cy="106" r="12" fill="#3a1f1a" stroke="#e07b6a"/><text x="317" y="111" fill="#e07b6a">E</text></g>
+            <g class="lb" data-seg="16"><circle cx="422" cy="94" r="12" fill="#3a1f1a" stroke="#e07b6a"/><text x="422" y="99" fill="#e07b6a">B</text></g>
+          </g>
+        </svg>
+      </div>
       <div class="flow-note">
         <b style="color:var(--brass)">プラグボード</b>:手前のソケットにケーブルを挿し、文字のペアを入れ替える(例:A⇄M)。最大13組。<br>
         <b style="color:var(--brass)">ローター</b>:内部に26本の配線が通った円盤。5種類から3枚を選び、順番と初期位置を決める。一文字打つごとに右端が回転する。<br>
-        <b style="color:var(--brass)">リフレクター</b>:電流を折り返す固定の配線盤。これのおかげで<b style="color:var(--lamp)">暗号化と復号が同じ操作</b>になる(同じ設定で暗号文を打ち込めば原文に戻る)。
+        <b style="color:var(--brass)">リフレクター</b>:電流を折り返す固定の配線盤。これのおかげで<b style="color:var(--lamp)">暗号化と復号が同じ操作</b>になる(同じ設定で暗号文を打ち込めば原文に戻る)。<br>
+        <span style="color:var(--dim);font-size:12.5px">ポイント:帰り道は必ず行きと別のルートを通るため、押した文字と同じランプは絶対に点きません(第六章の伏線です)。</span>
       </div>
     </div>
 
@@ -806,6 +957,7 @@ function pf(img){
 
       <div class="sim-actions">
         <button class="btn ghost" id="resetBtn">位置をリセット(テープも消去)</button>
+        <button class="snd-btn" id="sndToggle" aria-pressed="true">🔊 打鍵音 ON</button>
         <span class="sim-tip">復号のコツ:暗号化したときと同じ初期位置に戻してから、暗号文を打ち込む</span>
       </div>
     </div>
@@ -1028,6 +1180,14 @@ function pf(img){
       </p>
       <p class="src">※機械と数学だけでは戦えなかった──暗号戦とは、頭脳と勇気の総力戦だったのです。</p>
     </div>
+
+    <figure class="photo">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/U-110_and_HMS_Bulldog.jpg?width=900" alt="1941年5月9日、洋上に浮上したドイツ潜水艦U-110。英駆逐艦ブルドッグによる拿捕作戦のさなかに撮影された実物の写真" loading="lazy" data-page="https://commons.wikimedia.org/wiki/File:U-110_and_HMS_Bulldog.jpg" onerror="pf(this)">
+      <figcaption>
+        <b>拿捕されるU-110(1941年5月9日撮影)</b> — 爆雷で浮上を強いられた全長76.5mのUボートに、英駆逐艦ブルドッグの乗り込み隊が向かった、まさにその作戦中の一枚。回収した暗号書は6月末まで有効で、以後6週間、海軍エニグマは「読み放題」になった。作戦名は「プリムローズ」。機密は徹底され、米国のルーズベルト大統領がこの拿捕を知らされたのは8か月後だったという。<br>
+        <span class="credit">Photo: Royal Navy, Public Domain — <a href="https://commons.wikimedia.org/wiki/File:U-110_and_HMS_Bulldog.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -1192,6 +1352,22 @@ function pf(img){
       </div>
     </div>
 
+    <div class="video-block">
+      <div class="machine-label">Bonus — 観たあとの答え合わせに</div>
+      <p class="video-lead">
+        映画を観終わったら、この動画がおすすめです。人気チャンネル「ゆるコンピュータ科学ラジオ」が
+        『イミテーション・ゲーム』の脚色ポイント──史実とどこが違うのか──を楽しく解説しています。
+        「暗号表を力技で奪って解いた」という話は、まさにこのサイト第七章のコラムで紹介した「ピンチ作戦」のこと。
+        サイト → 映画 → この動画、の順で見ると答え合わせが完璧になります。
+      </p>
+      <div class="video-embed">
+        <iframe src="https://www.youtube-nocookie.com/embed/n6pGLO-Y-DY" title="映画『イミテーションゲーム』の脚色ポイントを全部言う【チューリング3】(ゆるコンピュータ科学ラジオ)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <p class="video-fallback">
+        動画が表示されない場合は <a href="https://youtu.be/n6pGLO-Y-DY" target="_blank" rel="noopener">YouTubeで直接開く</a>
+      </p>
+    </div>
+
     <p class="next-note">
       ※配信・在庫状況は変わるため、リンクは検索結果ページにしています。<br>
       さらに深く知りたい方には、映画の原作となった評伝、アンドルー・ホッジス『エニグマ アラン・チューリング伝』(上下巻)もおすすめです。
@@ -1258,6 +1434,158 @@ Machine.prototype.encTrace=function(c){
   x=this.plug[x];t.push(x);
   return t;
 };
+
+/* ================== SOUND (Web Audio合成・音声ファイル不要) ================== */
+let actx=null, sndOn=true;
+function audio(){
+  try{
+    if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    return actx;
+  }catch(e){return null;}
+}
+/* エニグマ打鍵音: 機械式のカチャッ(ノイズの高音+低音のタンッ) */
+function sndKey(){
+  if(!sndOn)return;
+  const ac=audio(); if(!ac)return;
+  const t=ac.currentTime;
+  // 高域のクリック(短いノイズ)
+  const len=Math.floor(ac.sampleRate*0.04);
+  const buf=ac.createBuffer(1,len,ac.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2);
+  const src=ac.createBufferSource();src.buffer=buf;
+  const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2600;bp.Q.value=1.1;
+  const g1=ac.createGain();g1.gain.setValueAtTime(0.5,t);
+  src.connect(bp).connect(g1).connect(ac.destination);
+  src.start(t);
+  // 低域のタンッ(ばね・ボディ鳴り)
+  const o=ac.createOscillator();o.type='triangle';
+  o.frequency.setValueAtTime(170,t);o.frequency.exponentialRampToValueAtTime(70,t+0.06);
+  const g2=ac.createGain();
+  g2.gain.setValueAtTime(0.28,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.09);
+  o.connect(g2).connect(ac.destination);
+  o.start(t);o.stop(t+0.1);
+}
+/* ボンベのドラム回転音(細かいカタカタ) */
+function sndTick(hi){
+  if(!sndOn)return;
+  const ac=audio(); if(!ac)return;
+  const t=ac.currentTime;
+  const o=ac.createOscillator();o.type='square';
+  o.frequency.value=hi?1900:1400;
+  const g=ac.createGain();
+  g.gain.setValueAtTime(0.045,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.03);
+  o.connect(g).connect(ac.destination);
+  o.start(t);o.stop(t+0.035);
+}
+/* ボンベ停止音(ガチャン) */
+function sndClunk(){
+  if(!sndOn)return;
+  const ac=audio(); if(!ac)return;
+  const t=ac.currentTime;
+  const o=ac.createOscillator();o.type='triangle';
+  o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(45,t+0.22);
+  const g=ac.createGain();
+  g.gain.setValueAtTime(0.55,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+  o.connect(g).connect(ac.destination);
+  o.start(t);o.stop(t+0.32);
+  const len=Math.floor(ac.sampleRate*0.06);
+  const buf=ac.createBuffer(1,len,ac.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2);
+  const src=ac.createBufferSource();src.buffer=buf;
+  const g2=ac.createGain();g2.gain.setValueAtTime(0.25,t);
+  src.connect(g2).connect(ac.destination);src.start(t);
+}
+/* モールス信号(650Hzの正弦波・実物らしい立ち上がり) */
+const MORSE={E:'.',N:'-.',I:'..',G:'--.',M:'--',A:'.-'};
+let morsePlaying=false;
+function playMorse(word){
+  const ac=audio(); if(!ac||morsePlaying)return;
+  morsePlaying=true;
+  const btn=document.getElementById('morseBtn');
+  const disp=document.getElementById('morseDisplay');
+  btn.disabled=true;
+  const UNIT=0.07, FREQ=650;
+  let t=ac.currentTime+0.15;
+  const events=[]; // {time, text}
+  let shown='';
+  for(const ch of word){
+    const code=MORSE[ch]||'';
+    events.push({time:t,text:shown+'<span class="cur">'+ch+' 受信中</span>'});
+    for(const sym of code){
+      const dur=(sym==='.'?1:3)*UNIT;
+      const o=ac.createOscillator();o.type='sine';o.frequency.value=FREQ;
+      const g=ac.createGain();
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.32,t+0.006);
+      g.gain.setValueAtTime(0.32,t+dur-0.008);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      o.connect(g).connect(ac.destination);
+      o.start(t);o.stop(t+dur+0.01);
+      t+=dur+UNIT;
+    }
+    shown+=ch+' <span style="color:var(--brass)">'+code.replace(/\./g,'・').replace(/-/g,'―')+'</span>  ';
+    events.push({time:t,text:shown});
+    t+=UNIT*2; // 文字間
+  }
+  events.push({time:t+0.1,text:shown+'<span class="cur">受信完了</span>'});
+  const t0=ac.currentTime;
+  function tick(){
+    const now=ac.currentTime;
+    while(events.length&&events[0].time<=now+0.02){disp.innerHTML=events.shift().text;}
+    if(events.length){requestAnimationFrame(tick);}
+    else{morsePlaying=false;btn.disabled=false;}
+  }
+  requestAnimationFrame(tick);
+}
+document.getElementById('morseBtn').addEventListener('click',()=>playMorse('ENIGMA'));
+document.getElementById('sndToggle').addEventListener('click',function(){
+  sndOn=!sndOn;
+  this.setAttribute('aria-pressed',sndOn);
+  this.textContent=sndOn?'🔊 打鍵音 ON':'🔇 打鍵音 OFF';
+  if(sndOn)sndKey();
+});
+
+/* ================== SIGNAL PATH ANIMATION ================== */
+(function(){
+  const btn=document.getElementById('sigBtn');
+  if(!btn)return;
+  const segs=Array.from(document.querySelectorAll('.sig-svg .seg'));
+  const labels=Array.from(document.querySelectorAll('.sig-svg .lb'));
+  const lamp=document.getElementById('sigLamp');
+  const lampTxt=document.getElementById('sigLampTxt');
+  const key=document.getElementById('sigKey');
+  let running=false;
+  btn.addEventListener('click',()=>{
+    if(running)return;
+    running=true;btn.disabled=true;
+    segs.forEach(s=>s.classList.remove('on'));
+    labels.forEach(l=>l.classList.remove('on'));
+    lamp.classList.remove('lit');lampTxt.classList.remove('lit');
+    key.classList.add('press');
+    sndKey();
+    const STEP=190;
+    segs.forEach((s,i)=>{
+      setTimeout(()=>{
+        s.classList.add('on');
+        labels.forEach(l=>{if(+l.dataset.seg===i)l.classList.add('on');});
+        // ローター内部の通過音(斜め線=変換のとき)
+        if([3,5,7,9,11,13,15].includes(i))sndTick(i>9);
+        if(i===segs.length-1){
+          setTimeout(()=>{
+            lamp.classList.add('lit');lampTxt.classList.add('lit');
+            key.classList.remove('press');
+            sndTick(true);
+            btn.disabled=false;running=false;
+            btn.textContent='↺ もう一度流す';
+          },220);
+        }
+      },300+i*STEP);
+    });
+  });
+})();
 
 /* ================== HERO DECODE ================== */
 (function(){
@@ -1349,6 +1677,7 @@ function renderWindows(){
 }
 let lampTimer=null;
 function pressKey(ch){
+  sndKey();
   simSettings();
   const m=new Machine(sim.order, sim.rings.map(r=>A[r]), sim.pos.map(p=>A[p]), sim.plugs);
   const t=m.encTrace(ch);
@@ -1458,6 +1787,8 @@ document.getElementById('bombeStart').addEventListener('click',()=>{
   document.getElementById('bombeResult').classList.remove('show');
   document.getElementById('decryptTape').style.display='none';
   [drumL,drumM,drumR].forEach(d=>d.classList.add('spin'));
+  let tickAlt=false;
+  const ticker=setInterval(()=>{sndTick(tickAlt=!tickAlt);},46);
   let idx=0;const total=17576;const stops=[];
   const CHUNK=180;
   function frame(){
@@ -1472,6 +1803,8 @@ document.getElementById('bombeStart').addEventListener('click',()=>{
     bBar.style.width=(idx/total*100)+'%';
     if(idx<total){requestAnimationFrame(frame);}
     else{
+      clearInterval(ticker);
+      sndClunk();
       [drumL,drumM,drumR].forEach(d=>d.classList.remove('spin'));
       const s=stops[0]||'???';
       drumL.textContent=s[0];drumM.textContent=s[1];drumR.textContent=s[2];
