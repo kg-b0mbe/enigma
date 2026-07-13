@@ -292,6 +292,14 @@ input[type=text]{
   letter-spacing:.06em;text-shadow:0 0 24px rgba(255,206,94,.3);word-break:break-all;
 }
 .big-number .k{font-size:14px;color:var(--brass);margin-top:12px;letter-spacing:.2em}
+/* cipher family tags */
+.type-tag{
+  display:inline-block;font-size:10px;letter-spacing:.15em;padding:2px 8px;margin-left:6px;
+  vertical-align:2px;font-weight:400;
+}
+.type-tag.tp{background:rgba(125,159,208,.15);color:#7d9fd0;border:1px solid #45597a}
+.type-tag.ka{background:rgba(200,164,94,.12);color:var(--brass);border:1px solid var(--brass-dim)}
+.type-tag.ki{background:rgba(224,123,106,.12);color:#e07b6a;border:1px solid #7a4038}
 
 /* ============ crib slider ============ */
 .crib-area{overflow-x:auto;padding:10px 2px 4px}
@@ -642,6 +650,36 @@ function pf(img){
       </div>
     </div>
 
+    <div style="margin:44px 0 30px">
+      <p class="lead" style="margin-bottom:6px">
+        ここで、人類の暗号2500年をざっくり地図にしておきましょう。
+        暗号には大きく<b style="color:#7d9fd0">「順番を入れ替える」転置式</b>と、
+        <b style="color:var(--brass)">「文字を置き換える」換字式</b>の2つの家系があります。
+      </p>
+      <div class="numbers cipher-cards">
+        <div class="num-card">
+          <div class="v" style="font-size:15px">紀元前5世紀・スパルタ</div>
+          <div class="k">スキュタレー暗号 <span class="type-tag tp">転置式</span></div>
+          <div class="d">革ひもに文字を書き、同じ太さの棒に巻きつけると文が現れる。文字自体は変えず「読む順番」を隠す、記録に残る最古級の軍用暗号。棒の太さが鍵。</div>
+        </div>
+        <div class="num-card">
+          <div class="v" style="font-size:15px">紀元前1世紀・ローマ</div>
+          <div class="k">シーザー暗号 <span class="type-tag ka">換字式</span></div>
+          <div class="d">上で体験した通り、文字を一定数ずらして置き換える。カエサルが軍令に使ったと伝わる、換字式の原点。</div>
+        </div>
+        <div class="num-card">
+          <div class="v" style="font-size:15px">16世紀・戦国日本</div>
+          <div class="k">上杉暗号「字変四十八」 <span class="type-tag ka">換字式</span></div>
+          <div class="d">上杉家に伝わったとされる暗号。いろは48文字を7×7の表に並べ、「何行目の何文字目か」という数字の組で表す。密書が奪われても数字の列にしか見えない。</div>
+        </div>
+        <div class="num-card">
+          <div class="v" style="font-size:15px">20世紀・世界大戦</div>
+          <div class="k">機械式暗号の時代 <span class="type-tag ki">機械式</span></div>
+          <div class="d">換字を機械で自動化し多表式を極限まで高めた最終形態。ドイツの<b style="color:var(--lamp)">エニグマ</b>、日本の<b style="color:var(--lamp)">パープル</b>(九七式欧文印字機)、米国のSIGABAが同じ時代にしのぎを削った。</div>
+        </div>
+      </div>
+    </div>
+
     <div class="paper" data-stamp="TO CHAPTER 2">
       <h3>「一文字ごとにルールを変えればいい」</h3>
       <p>
@@ -654,6 +692,33 @@ function pf(img){
         ならば──<strong>機械にやらせればいい</strong>。
         キーを押すたびに歯車が回り、自動で換字表が切り替わり、そのパターンが約1万7千文字も繰り返されない機械。
         それこそが、換字式暗号2000年の歴史の到達点、<strong>エニグマ</strong>なのです。
+      </p>
+    </div>
+
+    <div class="paper column" data-stamp="MAGIC">
+      <h3>日本の「エニグマ」── パープル暗号とD暗号</h3>
+      <p>
+        機械式暗号の競争に、日本も参戦していました。外務省が世界の大使館との交信に使った
+        <strong>九七式欧文印字機</strong>──米国がつけたコードネームが<strong>「パープル」</strong>です
+        (解読資料を綴じたバインダーの色が由来といわれます)。
+        エニグマとよく混同されますが、両者は別の機械。エニグマが回転するローターで換字したのに対し、
+        パープルは電話交換機の部品(ステッピングスイッチ)で換字する、いわば<strong>エニグマの従兄弟</strong>でした。
+      </p>
+      <p>
+        しかしパープルは、1940年、ウィリアム・フリードマン率いる米陸軍の解読チームに破られます。
+        驚くべきことに彼らは<strong>実物を一度も見ないまま</strong>、暗号文の分析だけで機械の複製まで作り上げました。
+        解読情報のコードネームは「マジック」。日本の対米交渉の訓令は、届く前から読まれていたのです。
+      </p>
+      <p>
+        一方、日本海軍の主力は機械ではなく暗号書(コードブック)方式の<strong>「海軍暗号書D」</strong>、米側の呼び名で
+        <strong>JN-25</strong>でした。これも米海軍に部分解読され、1942年のミッドウェー海戦では
+        日本の攻略目標「AF」がミッドウェー島だと突き止められて待ち伏せが成立
+        (米側が「ミッドウェーで真水不足」という偽電報を流し、日本側が「AFは真水不足」と打電したことで確定した、という逸話は有名です)。
+        翌年には山本五十六長官の前線視察の日程電報が解読され、搭乗機が撃墜されました。
+      </p>
+      <p class="src">
+        ※つまり大戦中、大西洋ではエニグマが、太平洋ではパープルとD暗号が、それぞれ破られていました。
+        ブレッチリー・パークの物語は、世界規模で繰り広げられた「暗号戦」の最も劇的な一章なのです。
       </p>
     </div>
   </div>
