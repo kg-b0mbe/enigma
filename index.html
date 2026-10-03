@@ -590,11 +590,11 @@ function pf(img){
       <div class="machine-label">Caesar Cipher — シーザー暗号を試す</div>
       <div class="caesar-grid">
         <div class="setting">
-          <label>原文(ローマ字で入力)</label>
+          <label for="caesarIn">原文(ローマ字で入力)</label>
           <input type="text" id="caesarIn" value="TURING" maxlength="24" autocomplete="off">
         </div>
         <div class="setting">
-          <label>鍵:ずらす数 = <span id="caesarShiftV" style="color:var(--lamp)">3</span></label>
+          <label for="caesarShift">鍵:ずらす数 = <span id="caesarShiftV" style="color:var(--lamp)">3</span></label>
           <input type="range" id="caesarShift" min="0" max="25" value="3" style="width:100%">
           <div class="hint">スライダーを動かすと暗号文が変わります</div>
         </div>
@@ -614,7 +614,7 @@ function pf(img){
       <p>
         シーザー暗号の鍵は26通りしかないので、全部試せば数分で破れます。
         では、ずらすのではなく「AはQに、BはXに…」と26文字をバラバラに対応させたら?
-        鍵は約40京通り(26の階乗 ≒ 4×10²⁶)に跳ね上がりますが──それでも破られます。
+        鍵は約4×10²⁶通り(26の階乗)に跳ね上がりますが──それでも破られます。
       </p>
       <p>
         武器は<strong>頻度分析</strong>。9世紀のアラビアの学者アル・キンディーが発見した手法で、
@@ -975,23 +975,24 @@ function pf(img){
         <div class="setting">
           <label>ローターの選択(左・中・右)</label>
           <div class="row">
-            <select id="selL"><option>I</option><option selected>II</option><option>III</option><option>IV</option><option>V</option></select>
-            <select id="selM"><option selected>I</option><option>II</option><option>III</option><option>IV</option><option>V</option></select>
-            <select id="selR"><option>I</option><option>II</option><option selected>III</option><option>IV</option><option>V</option></select>
+            <select id="selL" aria-label="左ローターの選択" aria-describedby="rotorErr"><option>I</option><option selected>II</option><option>III</option><option>IV</option><option>V</option></select>
+            <select id="selM" aria-label="中央ローターの選択" aria-describedby="rotorErr"><option selected>I</option><option>II</option><option>III</option><option>IV</option><option>V</option></select>
+            <select id="selR" aria-label="右ローターの選択" aria-describedby="rotorErr"><option>I</option><option>II</option><option selected>III</option><option>IV</option><option>V</option></select>
           </div>
-          <div class="hint">5種類から3枚を選ぶ:順列は60通り</div>
+          <div class="plug-err" id="rotorErr" role="alert"></div>
+          <div class="hint">5種類から異なる3枚を選ぶ:順列は60通り</div>
         </div>
         <div class="setting">
           <label>リング設定(Ringstellung)</label>
           <div class="row">
-            <select id="ringL"></select><select id="ringM"></select><select id="ringR"></select>
+            <select id="ringL" aria-label="左ローターのリング設定"></select><select id="ringM" aria-label="中央ローターのリング設定"></select><select id="ringR" aria-label="右ローターのリング設定"></select>
           </div>
           <div class="hint">内部配線と文字盤のズレを決める設定</div>
         </div>
         <div class="setting">
-          <label>プラグボード(ペアをスペース区切りで)</label>
-          <input type="text" id="plugInput" value="AM TC" placeholder="例: AM TC QX" maxlength="40" autocomplete="off">
-          <div class="plug-err" id="plugErr">同じ文字を2回使うことはできません</div>
+          <label for="plugInput">プラグボード(ペアをスペース区切りで)</label>
+          <input type="text" id="plugInput" aria-describedby="plugErr" value="AM TC" placeholder="例: AM TC QX" maxlength="40" autocomplete="off">
+          <div class="plug-err" id="plugErr" role="alert"></div>
           <div class="hint">入力例「AM TC」= AとM、TとCを入れ替える</div>
         </div>
       </div>
@@ -1042,7 +1043,7 @@ function pf(img){
       <div class="num-card"><div class="v">60</div><div class="k">ローターの選び方</div><div class="d">5種類から3枚を選んで並べる順列(5×4×3)</div></div>
       <div class="num-card"><div class="v">17,576</div><div class="k">初期位置</div><div class="d">3枚のローターの開始位置(26×26×26)</div></div>
       <div class="num-card"><div class="v">676</div><div class="k">リング設定</div><div class="d">暗号に影響するリングの組み合わせ(26×26)</div></div>
-      <div class="num-card"><div class="v">約150兆×10⁶</div><div class="k">プラグボード</div><div class="d">10組の配線の場合、約150,738,274,937,250通り</div></div>
+      <div class="num-card"><div class="v">約150兆</div><div class="k">プラグボード</div><div class="d">10組の配線の場合、約150,738,274,937,250通り</div></div>
     </div>
 
     <div class="big-number">
@@ -1712,9 +1713,9 @@ function fillRingSelects(){
 function parsePlugs(){
   const inp=document.getElementById('plugInput');
   const err=document.getElementById('plugErr');
-  const raw=inp.value.toUpperCase().replace(/[^A-Z\s]/g,'');
+  const raw=inp.value.toUpperCase();
   const toks=raw.trim().split(/\s+/).filter(Boolean);
-  const pairs=[];const used=new Set();let bad=false;
+  const pairs=[];const used=new Set();let bad=/[^A-Z\s]/.test(raw);
   for(const t of toks){
     if(t.length!==2||t[0]===t[1]){bad=true;break;}
     if(used.has(t[0])||used.has(t[1])){bad=true;break;}
@@ -1722,16 +1723,28 @@ function parsePlugs(){
     if(pairs.length>13){bad=true;break;}
   }
   err.style.display=bad?'block':'none';
-  err.textContent=bad?'入力が正しくありません(2文字ペア・重複なし・最大13組)':'';
-  return bad?[]:pairs;
+  err.textContent=bad?'入力が正しくありません(英字2文字ペア・重複なし・最大13組)。修正するまで暗号化できません。':'';
+  inp.setAttribute('aria-invalid',String(bad));
+  return bad?null:pairs;
 }
 function simSettings(){
-  sim.order=[document.getElementById('selL').value,document.getElementById('selM').value,document.getElementById('selR').value];
+  const rotorInputs=['selL','selM','selR'].map(id=>document.getElementById(id));
+  const order=rotorInputs.map(inp=>inp.value);
+  const badRotors=new Set(order).size!==3||order.some(name=>!Object.hasOwn(ROTORS,name));
+  const err=document.getElementById('rotorErr');
+  err.style.display=badRotors?'block':'none';
+  err.textContent=badRotors?'異なるローターを3枚選んでください。修正するまで暗号化できません。':'';
+  rotorInputs.forEach(inp=>inp.setAttribute('aria-invalid',String(badRotors)));
+  const plugs=parsePlugs();
+  // Validate the entire configuration before changing any simulator state.
+  if(badRotors||plugs===null)return false;
+  sim.order=order;
   sim.rings=[document.getElementById('ringL').selectedIndex,document.getElementById('ringM').selectedIndex,document.getElementById('ringR').selectedIndex];
-  sim.plugs=parsePlugs();
+  sim.plugs=plugs;
   document.getElementById('nameL').textContent=sim.order[0];
   document.getElementById('nameM').textContent=sim.order[1];
   document.getElementById('nameR').textContent=sim.order[2];
+  return true;
 }
 function renderWindows(){
   ['winL','winM','winR'].forEach((id,k)=>{
@@ -1742,8 +1755,8 @@ function renderWindows(){
 }
 let lampTimer=null;
 function pressKey(ch){
+  if(!simSettings())return;
   sndKey();
-  simSettings();
   const m=new Machine(sim.order, sim.rings.map(r=>A[r]), sim.pos.map(p=>A[p]), sim.plugs);
   const t=m.encTrace(ch);
   sim.pos=m.rot.map(r=>r.pos);
@@ -1775,7 +1788,7 @@ function bindSim(){
   });
   ['selL','selM','selR','ringL','ringM','ringR'].forEach(id=>
     document.getElementById(id).addEventListener('change',simSettings));
-  document.getElementById('plugInput').addEventListener('input',parsePlugs);
+  document.getElementById('plugInput').addEventListener('input',simSettings);
   document.getElementById('resetBtn').addEventListener('click',()=>{
     sim.pos=[0,0,0];sim.in='';sim.out='';
     renderWindows();
